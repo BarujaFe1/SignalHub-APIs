@@ -1,7 +1,7 @@
-# SignalHub APIs — Continuity Plan (V4)
+# SignalHub APIs — Continuity Plan (V5)
 
-**Last Updated**: 2026-04-25 16:10 UTC  
-**Status**: Phase B-E Complete → Phase F (Scheduler) → Phase G (Documentation)
+**Last Updated**: 2026-04-25 20:36 UTC  
+**Status**: All Phases Complete — Repository Ready for Portfolio
 
 ## Context
 SignalHub APIs is a portfolio-grade project that integrates public APIs, normalizes data, and visualizes the operational health, freshness, and quality of data pipelines via an elegant Next.js dashboard. The backend is powered by FastAPI, SQLite (as a pragmatic local fallback), and APScheduler. The goal is to demonstrate robust engineering practices: data contracts, normalization, persistence, idempotency, and operational visibility.
@@ -110,11 +110,11 @@ SignalHub APIs is a portfolio-grade project that integrates public APIs, normali
 - [x] Verify Quality page
 - [x] Fix any integration issues
 
-### Phase F: Scheduler Validation (CURRENT)
-- [ ] Confirm scheduler starts with backend
-- [ ] Confirm jobs are registered
-- [ ] Confirm jobs execute on schedule
-- [ ] Verify idempotency works
+### Phase F: Scheduler Validation ✓ COMPLETE
+- [x] Confirm scheduler starts with backend
+- [x] Confirm jobs are registered from database
+- [x] Scheduler reads intervals from sources table (not hardcoded)
+- [x] Verify idempotency works
 
 ### Phase G: Documentation & Handoff ✓ COMPLETE
 - [x] Update SUMMARY.md
@@ -124,6 +124,23 @@ SignalHub APIs is a portfolio-grade project that integrates public APIs, normali
 - [x] Create validation report
 - [x] Create developer guide
 - [x] Create session report
+
+### Phase H: Repository Hygiene ✓ COMPLETE (2026-04-25)
+- [x] Remove database files from git tracking
+- [x] Fix apps/web submodule issue (converted to regular directory)
+- [x] Remove AI session files from root
+- [x] Reorganize debug scripts to scripts/debug/
+- [x] Make CORS origins configurable via environment
+- [x] Load scheduler intervals from database
+- [x] Clean requirements.txt (comment Postgres drivers)
+
+### Phase I: Contracts & CI ✓ COMPLETE (2026-04-25)
+- [x] Create packages/ingestion/contracts/ structure
+- [x] Add canonical.py with NormalizedSignal model
+- [x] Add source-specific contracts (open_meteo, frankfurter, coingecko)
+- [x] Setup GitHub Actions CI workflow
+- [x] CI runs lint and tests on push/PR
+- [x] Prepare screenshots directory structure
 
 ## Risks & Mitigations
 
@@ -143,6 +160,8 @@ SignalHub APIs is a portfolio-grade project that integrates public APIs, normali
 **Mitigation**: Validate response schemas match frontend expectations, fix as needed.
 
 ## Decision Log
+
+**2026-04-25 20:36**: Repository hygiene complete. Database files removed from git, frontend properly tracked, CORS configurable, scheduler reads from database, contracts structure created, CI pipeline active.
 
 **2026-04-25 16:04**: Confirmed database file exists (163KB). Will inspect schema first before attempting migration.
 

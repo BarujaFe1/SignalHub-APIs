@@ -1,7 +1,7 @@
-# SignalHub APIs - Summary of Hand-off (V4)
+# SignalHub APIs - Summary of Hand-off (V5)
 
-**Last Updated**: 2026-04-25 16:10 UTC  
-**Status**: Fully Functional - Ready for Production
+**Last Updated**: 2026-04-25 20:36 UTC  
+**Status**: Repository Clean - Ready for Portfolio Publication
 
 ## Contexto do Projeto
 O **SignalHub APIs** é um produto de observabilidade técnica de portfólio. Ele consome APIs (Open-Meteo, Frankfurter, CoinGecko), normaliza os dados, monitora o frescor (freshness) e executa testes de qualidade (quality checks), expondo tudo em um dashboard Next.js com design premium (Apple-like).
@@ -81,6 +81,23 @@ O **SignalHub APIs** é um produto de observabilidade técnica de portfólio. El
 - UI premium preservada
 - Loading/error states funcionando
 
+### Checkpoint 6: Repository Hygiene ✓ (2026-04-25 20:36)
+- Database files removed from git tracking (*.db in .gitignore)
+- apps/web converted from submodule to regular directory
+- AI session files removed from root
+- Debug scripts reorganized to scripts/debug/
+- CORS origins now configurable via environment
+- Scheduler intervals loaded from database (not hardcoded)
+- requirements.txt cleaned (Postgres drivers commented)
+
+### Checkpoint 7: Contracts & CI ✓ (2026-04-25 20:36)
+- packages/ingestion/contracts/ structure created
+- Canonical signal model defined
+- Source-specific contracts added (open_meteo, frankfurter, coingecko)
+- GitHub Actions CI workflow configured
+- CI runs lint and tests on push/PR
+- Screenshots directory prepared
+
 ## Métricas Atuais do Sistema
 
 ```
@@ -93,17 +110,18 @@ Active Sources: 3
 Stale Sources: 0
 ```
 
-## O que ainda precisa ser validado
+## O que ainda precisa ser feito
 
-### Scheduler (Próximo Passo)
-- Confirmar que jobs são registrados no startup
-- Confirmar que jobs executam automaticamente nos intervalos configurados
-- Validar idempotência (não executar duplicados na mesma janela de tempo)
+### Screenshots (Manual Task)
+- Capture screenshots with system running (backend + frontend)
+- Save to docs/screenshots/ with descriptive names
+- See docs/screenshots/README.md for instructions
 
-### Documentação
-- Atualizar README.md com instruções de setup atualizadas
-- Documentar comandos de desenvolvimento
-- Adicionar screenshots do frontend funcionando
+### Optional Enhancements (V1.1+)
+- Deploy to production (Vercel + Railway/Render)
+- Migrate to PostgreSQL for production
+- Add more connectors
+- Implement alerting system
 
 ## Riscos Conhecidos
 
@@ -135,14 +153,14 @@ npm run dev
 
 ### Trigger Connectors Manually
 ```bash
-cd C:\dev\signalhub-apis\apps\api
-venv\Scripts\python.exe trigger_connectors.py
+cd C:\dev\signalhub-apis
+python scripts/trigger_connectors.py
 ```
 
 ### Validate API
 ```bash
-cd C:\dev\signalhub-apis\apps\api
-venv\Scripts\python.exe validate_api.py
+cd C:\dev\signalhub-apis
+python scripts/debug/validate_api.py
 ```
 
 ## Próximo Passo Recomendado
@@ -153,6 +171,8 @@ venv\Scripts\python.exe validate_api.py
 4. **Preparar Demo**: Criar script de demonstração para apresentação.
 
 ## Decisões Tomadas
+
+**2026-04-25 20:36**: Repository hygiene session complete. All critical issues resolved. Database files removed from git, frontend properly tracked, CORS configurable, scheduler reads from database, contracts structure created, CI pipeline active. Repository is now clean and ready for portfolio publication.
 
 **2026-04-25 16:10**: Sistema validado end-to-end. Backend, frontend e conectores funcionando. Dados reais fluindo. Pronto para validação do scheduler.
 

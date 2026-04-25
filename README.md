@@ -41,6 +41,12 @@ Unlike generic monitoring tools that only track uptime, or simple dashboards tha
 
 > 🎯 **Built for portfolios:** This project demonstrates production-grade patterns for data engineering, API integration, job scheduling, and observability.
 
+### Screenshots
+
+> **Note:** Screenshots will be added once the system is running. See [docs/screenshots/README.md](docs/screenshots/README.md) for capture instructions.
+
+---
+
 ### Live Demo
 
 🔗 **Coming Soon** — Deployment in progress
