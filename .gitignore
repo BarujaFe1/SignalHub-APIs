@@ -38,5 +38,11 @@ htmlcov/
 # Docker
 pgdata/
 
+# Database
+*.db
+*.sqlite
+*.sqlite3
+signalhub.db
+
 # Misc
 *.log

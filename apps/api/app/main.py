@@ -37,13 +37,6 @@ logger = logging.getLogger("signalhub")
 
 scheduler = AsyncIOScheduler()
 
-# Source schedules (slug → interval in minutes)
-SOURCE_SCHEDULES = {
-    "open-meteo": 30,
-    "frankfurter": 60,
-    "coingecko": 15,
-}
-
 
 async def scheduled_job(source_slug: str):
     """Execute a connector job within its own DB session."""
@@ -71,18 +64,25 @@ async def lifespan(app: FastAPI):
     """Startup/shutdown lifecycle manager."""
     logger.info("🚀 SignalHub APIs starting up...")
 
-    # Register scheduled jobs
-    for slug, interval_minutes in SOURCE_SCHEDULES.items():
-        scheduler.add_job(
-            scheduled_job,
-            "interval",
-            minutes=interval_minutes,
-            args=[slug],
-            id=f"job_{slug}",
-            name=f"Ingest {slug}",
-            replace_existing=True,
-        )
-        logger.info(f"📋 Registered job: {slug} (every {interval_minutes}m)")
+    async with AsyncSessionLocal() as session:
+        from app.services.queries import get_all_sources
+        
+        sources = await get_all_sources(session)
+        
+        for source in sources:
+            if not source.is_active:
+                continue
+                
+            scheduler.add_job(
+                scheduled_job,
+                "interval",
+                minutes=source.schedule_interval_minutes,
+                args=[source.slug],
+                id=f"job_{source.slug}",
+                name=f"Ingest {source.slug}",
+                replace_existing=True,
+            )
+            logger.info(f"📋 Registered job: {source.slug} (every {source.schedule_interval_minutes}m)")
 
     scheduler.start()
     logger.info("✅ Scheduler started")
@@ -107,7 +107,7 @@ app = FastAPI(
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

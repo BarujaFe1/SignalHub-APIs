@@ -1,0 +1,216 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─── SignalHub Design Tokens ──────────────────────────── */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+  --font-heading: var(--font-inter);
+
+  /* Sidebar */
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+
+  /* Charts */
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+
+  /* Core */
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* SignalHub custom colors */
+  --color-signal-teal: var(--signal-teal);
+  --color-signal-teal-foreground: var(--signal-teal-foreground);
+  --color-signal-teal-subtle: var(--signal-teal-subtle);
+  --color-signal-success: var(--signal-success);
+  --color-signal-warning: var(--signal-warning);
+  --color-signal-error: var(--signal-error);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+
+  /* Radius */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ─── Light Mode ───────────────────────────────────────── */
+
+:root {
+  --background: #FAFAF9;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+  --primary: #1A7A6D;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5F5F3;
+  --secondary-foreground: #1A1A1A;
+  --muted: #F5F5F3;
+  --muted-foreground: #6B6B6B;
+  --accent: #F0EDE8;
+  --accent-foreground: #1A1A1A;
+  --destructive: #DC2626;
+  --border: #E8E5E0;
+  --input: #E8E5E0;
+  --ring: #1A7A6D;
+  --radius: 0.75rem;
+
+  /* SignalHub palette */
+  --signal-teal: #1A7A6D;
+  --signal-teal-foreground: #FFFFFF;
+  --signal-teal-subtle: #E8F5F2;
+  --signal-success: #15803D;
+  --signal-warning: #B45309;
+  --signal-error: #DC2626;
+  --surface: #FFFFFF;
+  --surface-raised: #F5F5F3;
+
+  /* Charts */
+  --chart-1: #1A7A6D;
+  --chart-2: #2563EB;
+  --chart-3: #7C3AED;
+  --chart-4: #DB2777;
+  --chart-5: #EA580C;
+
+  /* Sidebar */
+  --sidebar: #FAFAF9;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #1A7A6D;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F0EDE8;
+  --sidebar-accent-foreground: #1A1A1A;
+  --sidebar-border: #E8E5E0;
+  --sidebar-ring: #1A7A6D;
+}
+
+/* ─── Dark Mode ────────────────────────────────────────── */
+
+.dark {
+  --background: #0C0C0C;
+  --foreground: #F0F0F0;
+  --card: #161616;
+  --card-foreground: #F0F0F0;
+  --popover: #161616;
+  --popover-foreground: #F0F0F0;
+  --primary: #2DD4A8;
+  --primary-foreground: #0C0C0C;
+  --secondary: #1C1C1C;
+  --secondary-foreground: #F0F0F0;
+  --muted: #1C1C1C;
+  --muted-foreground: #8A8A8A;
+  --accent: #222222;
+  --accent-foreground: #F0F0F0;
+  --destructive: #F87171;
+  --border: #2A2A2A;
+  --input: #2A2A2A;
+  --ring: #2DD4A8;
+
+  --signal-teal: #2DD4A8;
+  --signal-teal-foreground: #0C0C0C;
+  --signal-teal-subtle: #1A2E28;
+  --signal-success: #4ADE80;
+  --signal-warning: #FBBF24;
+  --signal-error: #F87171;
+  --surface: #161616;
+  --surface-raised: #1C1C1C;
+
+  --chart-1: #2DD4A8;
+  --chart-2: #60A5FA;
+  --chart-3: #A78BFA;
+  --chart-4: #F472B6;
+  --chart-5: #FB923C;
+
+  --sidebar: #0C0C0C;
+  --sidebar-foreground: #F0F0F0;
+  --sidebar-primary: #2DD4A8;
+  --sidebar-primary-foreground: #0C0C0C;
+  --sidebar-accent: #1C1C1C;
+  --sidebar-accent-foreground: #F0F0F0;
+  --sidebar-border: #2A2A2A;
+  --sidebar-ring: #2DD4A8;
+}
+
+/* ─── Base Styles ──────────────────────────────────────── */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ─── Custom Utilities ─────────────────────────────────── */
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ─── Animations ───────────────────────────────────────── */
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
