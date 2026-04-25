@@ -43,7 +43,30 @@ Unlike generic monitoring tools that only track uptime, or simple dashboards tha
 
 ### Screenshots
 
-> **Note:** Screenshots will be added once the system is running. See [docs/screenshots/README.md](docs/screenshots/README.md) for capture instructions.
+#### Overview Dashboard
+The main dashboard displays system-wide metrics, active sources, and real-time freshness indicators.
+
+![Overview Dashboard](docs/screenshots/01-overview-dashboard.png)
+
+#### Runs Timeline
+Complete execution history with status indicators, duration metrics, and records processed.
+
+![Runs Timeline](docs/screenshots/02-runs-timeline.png)
+
+#### Source Detail
+Deep dive into individual sources showing freshness status, quality checks, and recent signals.
+
+![Source Detail](docs/screenshots/03-source-detail.png)
+
+#### Quality Checks
+Automated quality validation with pass/fail breakdown and detailed check results.
+
+![Quality Checks](docs/screenshots/04-quality-checks.png)
+
+#### API Documentation
+Interactive Swagger UI with all endpoints, schemas, and live testing capabilities.
+
+![Swagger UI](docs/screenshots/05-swagger-ui.png)
 
 ---
 
