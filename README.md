@@ -1,342 +1,513 @@
 <div align="center">
+  <img src="./icon.png" alt="SignalHub APIs Logo" width="120" height="120" />
 
-# SignalHub APIs
+  <h1>SignalHub APIs</h1>
 
-**Backend analytics made visible, reliable, and explainable.**
+  <p><strong>Backend analytics made visible, reliable and explainable</strong></p>
+  <p><strong>Analytics de backend visível, confiável e explicável</strong></p>
 
-A technical product that integrates multiple public APIs, normalizes data into unified signals, tracks execution history, computes freshness and quality checks, and exposes everything through a premium observability interface.
+  <p>
+    <a href="#pt-br">PT-BR</a> •
+    <a href="#en">English</a> •
+    <a href="#tech-stack">Tech Stack</a> •
+    <a href="#quick-start--início-rápido">Quick Start</a> •
+    <a href="#api-endpoints">API</a> •
+    <a href="#autor--author">Autor</a>
+  </p>
 
-<p>
-  <a href="#english">
-    <img src="https://img.shields.io/badge/Read%20in-English-0D47A1?style=flat-square&logo=googletranslate&logoColor=white" alt="English" />
-  </a>
-  &nbsp;
-  <a href="#português">
-    <img src="https://img.shields.io/badge/Ler%20em-Português-009C3B?style=flat-square&logo=googletranslate&logoColor=white" alt="Português" />
-  </a>
-</p>
-
-<p>
-  <img src="https://img.shields.io/badge/build-passing-brightgreen?style=flat-square" alt="Build" />
-  <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" />
-  <img src="https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi" alt="FastAPI" />
-  <img src="https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js" alt="Next.js" />
-  <img src="https://img.shields.io/badge/Python-3.12-blue?style=flat-square&logo=python" alt="Python" />
-  <img src="https://img.shields.io/badge/TypeScript-strict-blue?style=flat-square&logo=typescript" alt="TypeScript" />
-</p>
-
+  <p>
+    <img src="https://img.shields.io/badge/build-passing-brightgreen.svg" alt="Build Passing" />
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" />
+    <img src="https://img.shields.io/badge/FastAPI-0.115-009688.svg?logo=fastapi&logoColor=white" alt="FastAPI" />
+    <img src="https://img.shields.io/badge/Next.js-16-black.svg?logo=next.js&logoColor=white" alt="Next.js" />
+    <img src="https://img.shields.io/badge/Python-3.12-blue.svg?logo=python&logoColor=white" alt="Python 3.12" />
+    <img src="https://img.shields.io/badge/TypeScript-strict-3178C6.svg?logo=typescript&logoColor=white" alt="TypeScript Strict" />
+    <img src="https://img.shields.io/badge/Database-SQLite%20%2F%20PostgreSQL-003B57.svg?logo=sqlite&logoColor=white" alt="SQLite and PostgreSQL" />
+  </p>
 </div>
 
 ---
 
-<h2 id="english">🇬🇧 English</h2>
+<a id="pt-br"></a>
 
-### Overview
+## 🇧🇷 PT-BR
 
-**SignalHub APIs** is a portfolio-grade data observability platform that demonstrates how to build reliable, transparent backend systems. It integrates heterogeneous public APIs (weather, currency, crypto), normalizes their data into unified signals, tracks execution history, monitors data freshness, runs quality checks, and exposes everything through a premium Next.js dashboard.
+## 📊 Visão geral
 
-Real-world backend work is often invisible. Pipelines run silently, integrations break without notice, data freshness degrades without visibility, and quality erodes without checks. SignalHub bridges this gap by making every aspect of the data pipeline **observable, traceable, and explainable**.
+**SignalHub APIs** é uma plataforma de observabilidade de dados e integrações públicas criada para tornar o trabalho de backend analítico **visível, rastreável e explicável**.
 
-Unlike generic monitoring tools that only track uptime, or simple dashboards that just display data, SignalHub implements the **complete data engineering lifecycle** — ingestion, validation, normalization, persistence, quality checks, freshness monitoring, and operational visibility.
+O projeto integra múltiplas APIs públicas, normaliza respostas heterogêneas em um formato unificado de sinais, registra histórico de execução, monitora frescor dos dados, executa verificações de qualidade e expõe tudo em um dashboard premium construído com Next.js.
 
-> 🎯 **Built for portfolios:** This project demonstrates production-grade patterns for data engineering, API integration, job scheduling, and observability.
+A proposta é demonstrar, em formato de produto técnico de portfólio, o ciclo completo de engenharia de dados aplicada:
 
-### Screenshots
+- ingestão;
+- validação;
+- normalização;
+- persistência;
+- agendamento;
+- qualidade;
+- frescor;
+- observabilidade;
+- visualização operacional.
 
-#### Overview Dashboard
-The main dashboard displays system-wide metrics, active sources, and real-time freshness indicators.
-
-![Overview Dashboard](docs/screenshots/01-overview-dashboard.png)
-
-#### Runs Timeline
-Complete execution history with status indicators, duration metrics, and records processed.
-
-![Runs Timeline](docs/screenshots/02-runs-timeline.png)
-
-#### Source Detail
-Deep dive into individual sources showing freshness status, quality checks, and recent signals.
-
-![Source Detail](docs/screenshots/03-source-detail.png)
-
-#### Quality Checks
-Automated quality validation with pass/fail breakdown and detailed check results.
-
-![Quality Checks](docs/screenshots/04-quality-checks.png)
-
-#### API Documentation
-Interactive Swagger UI with all endpoints, schemas, and live testing capabilities.
-
-![Swagger UI](docs/screenshots/05-swagger-ui.png)
+> **Objetivo:** mostrar que integrações e pipelines de dados não precisam ser caixas-pretas. Eles podem ser acompanhados, auditados e explicados.
 
 ---
 
-### Live Demo
+## 🎯 Problema
 
-🔗 **Coming Soon** — Deployment in progress
+A maior parte do trabalho real de backend e engenharia de dados acontece de forma invisível:
 
-**Local Demo:**
-```bash
-git clone https://github.com/BarujaFe1/signalhub-apis.git
-cd signalhub-apis
-start.bat  # Windows
-```
+- pipelines rodam silenciosamente;
+- integrações quebram sem aviso claro;
+- dados ficam desatualizados sem indicador visual;
+- qualidade degrada sem checks;
+- históricos de execução ficam escondidos;
+- o trabalho técnico existe, mas não aparece para quem precisa decidir.
 
-Access:
-- **Frontend**: http://localhost:3001
-- **API Docs**: http://localhost:8000/docs
-- **Health Check**: http://localhost:8000/health
+Isso torna difícil responder perguntas simples, mas críticas:
+
+- A fonte está ativa?
+- A última execução falhou?
+- Os dados ainda estão frescos?
+- Quantos registros foram processados?
+- A qualidade passou nos critérios mínimos?
+- Qual conector está gerando problema?
+
+O **SignalHub APIs** existe para resolver essa invisibilidade.
 
 ---
 
-### The Problem
+## 💡 Solução
 
-Most backend and data engineering work is invisible:
-- ❌ Pipelines run silently
-- ❌ Integrations break without anyone knowing
-- ❌ Data freshness degrades without visibility
-- ❌ Quality erodes without checks
-- ❌ The work is real, but the output is hidden
+O SignalHub transforma integrações públicas em uma camada observável de sinais.
 
-### The Solution
-
-**SignalHub APIs** makes backend analytical work **visible**:
-
-| Invisible Work | Visible Output |
+| Trabalho invisível | Saída visível |
 |---|---|
-| Integration between heterogeneous sources | **Visible connectors** with status |
-| Data contracts and normalization | **Visible schemas** and transformations |
-| Execution history | **Visible run timeline** with metrics |
-| Data freshness | **Visible staleness indicators** |
-| Quality gates | **Visible check results** |
-| Operational clarity | **Visible system status** |
+| Integração entre fontes heterogêneas | Conectores com status operacional |
+| Contratos e normalização de dados | Schemas e sinais padronizados |
+| Histórico de execução | Timeline de runs com métricas |
+| Frescor dos dados | Indicadores de staleness |
+| Gates de qualidade | Checks com pass, warning e fail |
+| Estado do sistema | Dashboard com KPIs e detalhes |
+
+Diferente de um dashboard simples que apenas exibe dados finais, o projeto mostra o que aconteceu no caminho: quando rodou, quanto demorou, o que processou, se falhou e se a qualidade passou.
 
 ---
 
-### Features
+## ✨ Funcionalidades principais
 
-#### 🔌 Data Integration
-- **3 Public API Connectors**
-  - **Open-Meteo** — Weather data (temperature, humidity, wind speed)
-  - **Frankfurter** — Currency exchange rates (EUR to USD, GBP, BRL, etc.)
-  - **CoinGecko** — Cryptocurrency prices (BTC, ETH)
-- **Automatic Scheduling** — Jobs run every 15-60 minutes based on source
-- **Idempotency** — Prevents duplicate runs within the same time window
-- **Error Handling** — Graceful failures with detailed error logging
+### 🔌 Integração de dados
 
-#### 🧹 Data Processing
-- **Validation** — Pydantic schemas enforce data contracts
-- **Normalization** — Heterogeneous APIs → unified signal format
-- **Persistence** — Raw payloads + normalized signals stored separately
-- **Deduplication** — Idempotency keys prevent duplicate processing
+- 3 conectores de APIs públicas:
+  - **Open-Meteo:** clima, temperatura, umidade e vento.
+  - **Frankfurter:** taxas de câmbio.
+  - **CoinGecko:** preços de criptomoedas.
+- Agendamento automático com intervalos diferentes por fonte.
+- Execuções manuais por endpoint.
+- Idempotência para evitar runs duplicados na mesma janela.
+- Tratamento de erros com logging detalhado.
 
-#### 📊 Observability
-- **Execution History** — Every run tracked with status, duration, records processed
-- **Freshness Monitoring** — Real-time staleness indicators per source
-- **Quality Checks** — Automated validation of completeness, range, and consistency
-- **System Metrics** — Total runs, signals, quality pass rate, active sources
+### 🧹 Processamento
 
-#### 📈 Premium Dashboard
-- **Overview** — KPI cards with system-wide metrics
-- **Sources** — List view with freshness status and last run
-- **Source Detail** — Deep dive into runs, signals, and quality checks per source
-- **Runs** — Paginated execution history with filters
-- **Quality** — Quality check results with pass/fail breakdown
-- **Dark Mode** — System-aware with manual toggle
+- Validação por schemas Pydantic.
+- Normalização de APIs heterogêneas para formato unificado.
+- Separação entre payload bruto e sinal normalizado.
+- Persistência de histórico de runs.
+- Deduplicação por chave de idempotência.
+
+### 📊 Observabilidade
+
+- Histórico completo de execuções.
+- Status de sucesso, falha e execução em andamento.
+- Duração de cada run.
+- Quantidade de registros buscados e armazenados.
+- Indicadores de frescor por fonte.
+- Checks de qualidade por execução.
+- Métricas consolidadas do sistema.
+
+### 📈 Dashboard premium
+
+- Overview com KPIs principais.
+- Página de sources com status e último run.
+- Página de detalhe por fonte.
+- Timeline de runs.
+- Página de qualidade com breakdown pass/fail/warning.
+- Dark mode com visual premium.
+- Consumo de dados reais do backend.
 
 ---
 
-### Architecture
+## 🖼️ Screenshots
 
+Adicione os arquivos em `docs/screenshots/` para exibir a interface no README:
+
+```md
+![Overview Dashboard](docs/screenshots/01-overview-dashboard.png)
+![Runs Timeline](docs/screenshots/02-runs-timeline.png)
+![Source Detail](docs/screenshots/03-source-detail.png)
+![Quality Checks](docs/screenshots/04-quality-checks.png)
+![Swagger UI](docs/screenshots/05-swagger-ui.png)
 ```
+
+---
+
+<a id="en"></a>
+
+## 🇺🇸 English
+
+## 📊 Overview
+
+**SignalHub APIs** is a data observability and public API integration platform designed to make analytical backend work **visible, traceable and explainable**.
+
+The project integrates multiple public APIs, normalizes heterogeneous responses into a unified signal format, tracks execution history, monitors data freshness, runs quality checks and exposes everything through a premium Next.js dashboard.
+
+It demonstrates the full applied data engineering lifecycle as a portfolio-grade technical product:
+
+- ingestion;
+- validation;
+- normalization;
+- persistence;
+- scheduling;
+- quality checks;
+- freshness monitoring;
+- observability;
+- operational visualization.
+
+> **Goal:** show that integrations and data pipelines do not have to be black boxes. They can be monitored, audited and explained.
+
+---
+
+## 🎯 Problem
+
+Most real backend and data engineering work is invisible:
+
+- pipelines run silently;
+- integrations break without clear alerts;
+- data becomes stale without visual indicators;
+- quality degrades without checks;
+- execution history remains hidden;
+- the technical work exists, but the output is not visible to decision-makers.
+
+This makes it hard to answer simple but critical questions:
+
+- Is the source active?
+- Did the last run fail?
+- Is the data still fresh?
+- How many records were processed?
+- Did the quality checks pass?
+- Which connector is causing problems?
+
+**SignalHub APIs** exists to solve this invisibility.
+
+---
+
+## 💡 Solution
+
+SignalHub turns public API integrations into an observable layer of signals.
+
+| Invisible work | Visible output |
+|---|---|
+| Integration between heterogeneous sources | Connectors with operational status |
+| Data contracts and normalization | Schemas and standardized signals |
+| Execution history | Run timeline with metrics |
+| Data freshness | Staleness indicators |
+| Quality gates | Checks with pass, warning and fail |
+| System state | Dashboard with KPIs and details |
+
+Unlike a simple dashboard that only displays final data, this project shows what happened along the way: when it ran, how long it took, what it processed, whether it failed and whether quality checks passed.
+
+---
+
+## ✨ Key features
+
+### 🔌 Data integration
+
+- 3 public API connectors:
+  - **Open-Meteo:** weather, temperature, humidity and wind speed.
+  - **Frankfurter:** currency exchange rates.
+  - **CoinGecko:** cryptocurrency prices.
+- Automatic scheduling with different intervals per source.
+- Manual run trigger through API endpoints.
+- Idempotency to avoid duplicate runs in the same time window.
+- Error handling with detailed logging.
+
+### 🧹 Processing
+
+- Validation through Pydantic schemas.
+- Normalization from heterogeneous APIs into a unified signal format.
+- Separation between raw payloads and normalized signals.
+- Persistent run history.
+- Deduplication through idempotency keys.
+
+### 📊 Observability
+
+- Complete execution history.
+- Success, failure and running statuses.
+- Duration per run.
+- Number of records fetched and stored.
+- Freshness indicators per source.
+- Quality checks per run.
+- System-wide metrics.
+
+### 📈 Premium dashboard
+
+- Overview with main KPIs.
+- Sources page with status and last run.
+- Source detail page.
+- Runs timeline.
+- Quality page with pass/fail/warning breakdown.
+- Premium dark-mode interface.
+- Real backend data consumption.
+
+---
+
+## 🖼️ Screenshots
+
+Add files to `docs/screenshots/` to display the interface in the README:
+
+```md
+![Overview Dashboard](docs/screenshots/01-overview-dashboard.png)
+![Runs Timeline](docs/screenshots/02-runs-timeline.png)
+![Source Detail](docs/screenshots/03-source-detail.png)
+![Quality Checks](docs/screenshots/04-quality-checks.png)
+![Swagger UI](docs/screenshots/05-swagger-ui.png)
+```
+
+---
+
+<a id="tech-stack"></a>
+
+## 🛠️ Tech Stack
+
+### Backend
+
+| Layer | Technology |
+|---|---|
+| Framework | FastAPI 0.115 |
+| Language | Python 3.12 |
+| Database | SQLite for development / PostgreSQL for production |
+| ORM | SQLAlchemy 2.0 async |
+| Migrations | Alembic |
+| Validation | Pydantic 2.7 |
+| Scheduling | APScheduler 3.10 |
+| HTTP Client | httpx |
+
+### Frontend
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 App Router |
+| Language | TypeScript strict |
+| Styling | Tailwind CSS + shadcn/ui |
+| Charts | Recharts |
+| State | React Context |
+| Icons | Lucide React |
+
+### DevOps
+
+| Tool | Purpose |
+|---|---|
+| GitHub Actions | CI/CD pipeline |
+| Docker | Containerization |
+| Vercel | Frontend hosting |
+| Railway / Render | Backend hosting |
+
+---
+
+## 🏗️ Architecture / Arquitetura
+
+```txt
 ┌─────────────────────────────────────────────────────────────┐
 │                      Frontend (Next.js)                      │
-│  Overview · Sources · Runs · Quality · Real-time Updates    │
+│      Overview · Sources · Runs · Quality · Live Updates      │
 └────────────────────────┬────────────────────────────────────┘
-                         │ HTTP/REST
+                         │ HTTP / REST
 ┌────────────────────────▼────────────────────────────────────┐
 │                    Backend API (FastAPI)                     │
-│  /health · /sources · /runs · /signals · /quality · /metrics│
+│   /health · /sources · /runs · /signals · /quality · metrics │
 └────────────────────────┬────────────────────────────────────┘
                          │
         ┌────────────────┼────────────────┐
         │                │                │
 ┌───────▼──────┐ ┌──────▼──────┐ ┌──────▼──────┐
-│  APScheduler │ │   Database  │ │  Ingestion  │
-│   (Jobs)     │ │   (SQLite)  │ │  (Pipeline) │
+│  APScheduler │ │  Database   │ │  Ingestion  │
+│    Jobs      │ │   SQLite    │ │  Pipeline   │
 └───────┬──────┘ └─────────────┘ └──────┬──────┘
         │                                │
         │         ┌──────────────────────┘
         │         │
 ┌───────▼─────────▼──────────────────────────────────────────┐
 │                    Connectors                               │
-│  Open-Meteo · Frankfurter · CoinGecko                      │
+│           Open-Meteo · Frankfurter · CoinGecko              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### Data Flow
+## 🔄 Data Flow / Fluxo de dados
 
-```
-[ Public API ] → [ Connector ] → [ Validator ] → [ Normalizer ] → [ Persister ] → [ Quality Checker ] → [ Dashboard ]
+```txt
+[Public API]
+    ↓
+[Connector]
+    ↓
+[Validator]
+    ↓
+[Normalizer]
+    ↓
+[Persister]
+    ↓
+[Quality Checker]
+    ↓
+[Dashboard]
 ```
 
 | Step | Responsibility | Output |
 |---|---|---|
-| **Fetch** | HTTP request to public API | Raw JSON response |
-| **Validate** | Pydantic schema validation | Typed data object |
-| **Normalize** | Transform to unified signal format | `NormalizedSignal[]` |
-| **Persist** | Store raw + normalized data | Database records |
-| **Quality Check** | Validate completeness, range, consistency | `QualityCheck[]` |
-| **Update Freshness** | Calculate staleness | `FreshnessStatus` |
-| **Expose** | REST API endpoints | JSON responses |
+| Fetch | HTTP request to public API | Raw JSON response |
+| Validate | Pydantic schema validation | Typed data object |
+| Normalize | Transform into unified signal format | `NormalizedSignal[]` |
+| Persist | Store raw and normalized data | Database records |
+| Quality Check | Validate completeness, range and consistency | `QualityCheck[]` |
+| Freshness | Calculate staleness | `FreshnessStatus` |
+| Expose | REST API endpoints | JSON responses |
 
 ---
 
-### Tech Stack
+## 📁 Project Structure / Estrutura do projeto
 
-#### Backend
-| Layer | Technology |
-|---|---|
-| Framework | FastAPI 0.115 |
-| Language | Python 3.12 |
-| Database | SQLite (dev) / PostgreSQL (prod) |
-| ORM | SQLAlchemy 2.0 (async) |
-| Migrations | Alembic |
-| Validation | Pydantic 2.7 |
-| Scheduling | APScheduler 3.10 |
-| HTTP Client | httpx |
-
-#### Frontend
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript (strict) |
-| Styling | Tailwind CSS + shadcn/ui |
-| Charts | Recharts |
-| State | React Context |
-| Icons | Lucide React |
-
-#### DevOps
-| Tool | Purpose |
-|---|---|
-| GitHub Actions | CI/CD pipeline |
-| Docker | Containerization |
-| Vercel | Frontend hosting |
-| Railway/Render | Backend hosting (planned) |
-
----
-
-### Project Structure
-
-```
+```txt
 signalhub-apis/
 ├── apps/
-│   ├── api/                      # FastAPI backend
+│   ├── api/
 │   │   ├── app/
-│   │   │   ├── db/              # Models, engine, migrations
+│   │   │   ├── db/              # Models, engine and migrations
 │   │   │   ├── routers/         # API endpoints
 │   │   │   ├── schemas/         # Pydantic schemas
 │   │   │   ├── services/        # Business logic
 │   │   │   ├── config.py        # Configuration
-│   │   │   └── main.py          # FastAPI app + scheduler
-│   │   ├── alembic/             # Database migrations
-│   │   ├── signalhub.db         # SQLite database
-│   │   └── requirements.txt     # Python dependencies
+│   │   │   └── main.py          # FastAPI app and scheduler
+│   │   ├── alembic/
+│   │   └── requirements.txt
 │   │
-│   └── web/                     # Next.js frontend
+│   └── web/
 │       ├── src/
-│       │   ├── app/             # Pages (App Router)
+│       │   ├── app/             # Next.js App Router pages
 │       │   ├── components/      # React components
-│       │   └── lib/             # API client, utilities
-│       └── package.json         # Node dependencies
+│       │   └── lib/             # API client and utilities
+│       └── package.json
 │
 ├── packages/
-│   └── ingestion/               # Data pipeline
+│   └── ingestion/
 │       ├── connectors/          # API connectors
 │       ├── jobs/                # Job runner
 │       ├── quality/             # Quality checks
 │       └── transforms/          # Data transformations
 │
-├── docs/                        # Documentation
-├── scripts/                     # Utility scripts
-├── DEVELOPER.md                 # Developer guide
-├── VALIDATION.md                # Validation report
-└── README.md                    # This file
+├── docs/
+├── scripts/
+├── DEVELOPER.md
+├── VALIDATION.md
+└── README.md
 ```
 
 ---
 
-### Getting Started
+<a id="quick-start--início-rápido"></a>
 
-#### Prerequisites
+## 🚀 Quick Start / Início rápido
+
+### Prerequisites / Pré-requisitos
+
 - Python 3.12+
 - Node.js 20+
 - npm or pnpm
 
-#### Quick Start (Windows)
+### Quick Start on Windows
+
 ```bash
 git clone https://github.com/BarujaFe1/signalhub-apis.git
 cd signalhub-apis
 start.bat
 ```
 
-#### Manual Start
+### Manual start
+
+#### Terminal 1 — Backend
+
 ```bash
-# Terminal 1 - Backend
 cd apps/api
 python -m venv venv
-venv\Scripts\activate  # Windows
-source venv/bin/activate  # Linux/Mac
-pip install -r requirements.txt
-set PYTHONPATH=C:\path\to\signalhub-apis\apps\api;C:\path\to\signalhub-apis
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-# Terminal 2 - Frontend
+# Windows
+venv\Scripts\activate
+
+# Linux/macOS
+source venv/bin/activate
+
+pip install -r requirements.txt
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+#### Terminal 2 — Frontend
+
+```bash
 cd apps/web
 npm install
 npm run dev
 ```
 
-#### Access
-- Frontend: http://localhost:3001
-- API: http://localhost:8000
-- API Docs: http://localhost:8000/docs
-- Health: http://localhost:8000/health
+### Access
+
+```txt
+Frontend:    http://localhost:3001
+API:         http://localhost:8000
+API Docs:    http://localhost:8000/docs
+Health:      http://localhost:8000/health
+```
 
 ---
 
-### API Endpoints
+<a id="api-endpoints"></a>
 
-#### Health
-- `GET /health` — System health check
+## 🔗 API Endpoints
 
-#### Sources
-- `GET /api/v1/sources` — List all data sources
-- `GET /api/v1/sources/{slug}` — Get source detail with runs, signals, quality
+### Health
 
-#### Runs
-- `GET /api/v1/runs` — List execution history (paginated)
-- `GET /api/v1/runs/{id}` — Get run detail
-- `POST /api/v1/runs/trigger/{slug}` — Trigger manual run
+- `GET /health` — system health check
 
-#### Data
-- `GET /api/v1/signals` — List normalized signals (paginated)
-- `GET /api/v1/freshness` — Get freshness status for all sources
-- `GET /api/v1/quality` — List quality checks (paginated)
+### Sources
 
-#### Metrics
-- `GET /api/v1/metrics/summary` — System-wide metrics
+- `GET /api/v1/sources` — list all data sources
+- `GET /api/v1/sources/{slug}` — get source detail with runs, signals and quality
+
+### Runs
+
+- `GET /api/v1/runs` — list execution history
+- `GET /api/v1/runs/{id}` — get run detail
+- `POST /api/v1/runs/trigger/{slug}` — trigger manual run
+
+### Data
+
+- `GET /api/v1/signals` — list normalized signals
+- `GET /api/v1/freshness` — get freshness status for all sources
+- `GET /api/v1/quality` — list quality checks
+
+### Metrics
+
+- `GET /api/v1/metrics/summary` — system-wide metrics
 
 ---
 
-### Data Schema
+## 🧬 Data Schema / Modelo de dados
 
-#### Source
+### Source
+
 ```python
 class Source:
     id: UUID
-    slug: str  # "open-meteo", "frankfurter", "coingecko"
+    slug: str
     name: str
     description: str
     api_base_url: str
@@ -346,12 +517,13 @@ class Source:
     updated_at: datetime
 ```
 
-#### Run
+### Run
+
 ```python
 class Run:
     id: UUID
     source_id: UUID
-    status: str  # "success", "failure", "running"
+    status: str
     started_at: datetime
     finished_at: datetime | None
     duration_ms: int | None
@@ -361,392 +533,133 @@ class Run:
     idempotency_key: str
 ```
 
-#### NormalizedSignal
+### NormalizedSignal
+
 ```python
 class NormalizedSignal:
     id: UUID
     source_id: UUID
     run_id: UUID
-    signal_type: str  # "weather", "currency", "crypto"
-    signal_key: str   # "temperature", "EUR_USD", "BTC_USD"
+    signal_type: str
+    signal_key: str
     signal_value: float
-    signal_unit: str  # "celsius", "USD", "USD"
+    signal_unit: str
     observed_at: datetime
     metadata: dict | None
 ```
 
-#### QualityCheck
+### QualityCheck
+
 ```python
 class QualityCheck:
     id: UUID
     run_id: UUID
-    check_name: str  # "completeness", "range", "consistency"
-    check_status: str  # "pass", "warning", "fail"
+    check_name: str
+    check_status: str
     check_message: str
     checked_at: datetime
 ```
 
 ---
 
-### Connectors
+## 🔌 Connectors / Conectores
 
-#### Open-Meteo (Weather)
-- **Endpoint**: `https://api.open-meteo.com/v1/forecast`
-- **Schedule**: Every 30 minutes
-- **Signals**: temperature, humidity, wind_speed
-- **Auth**: None required
-
-#### Frankfurter (Currency)
-- **Endpoint**: `https://api.frankfurter.app/latest`
-- **Schedule**: Every 60 minutes
-- **Signals**: EUR exchange rates (USD, GBP, BRL, JPY)
-- **Auth**: None required
-
-#### CoinGecko (Crypto)
-- **Endpoint**: `https://api.coingecko.com/api/v3/simple/price`
-- **Schedule**: Every 15 minutes
-- **Signals**: BTC, ETH prices in USD
-- **Auth**: Optional API key
+| Connector | Data | Schedule | Auth |
+|---|---|---|---|
+| Open-Meteo | Weather: temperature, humidity, wind speed | Every 30 min | None |
+| Frankfurter | EUR exchange rates: USD, GBP, BRL, JPY | Every 60 min | None |
+| CoinGecko | BTC and ETH prices in USD | Every 15 min | Optional API key |
 
 ---
 
-### Quality Checks
+## ✅ Quality Checks / Checks de qualidade
 
-| Check | Description | Pass Criteria |
+| Check | Description | Pass criteria |
 |---|---|---|
-| **Completeness** | All required fields present | 100% of signals have all fields |
-| **Range** | Values within expected bounds | Temperature: -50 to 50°C, Prices: > 0 |
-| **Consistency** | Data matches expected patterns | Currency rates are reciprocal |
-| **Freshness** | Data is recent | Timestamp within last 2 hours |
+| Completeness | Required fields are present | 100% of signals include required fields |
+| Range | Values are within expected bounds | Temperature between -50 and 50°C, prices greater than 0 |
+| Consistency | Data matches expected patterns | Rates and keys follow expected structure |
+| Freshness | Data is recent | Timestamp within configured freshness window |
 
 ---
 
-### Validation Report
+## 🧪 Validation Report / Relatório de validação
 
-✅ **System Status**: Fully Operational
+Current validation status from the project documentation:
 
 | Component | Status | Details |
 |---|---|---|
-| Backend API | ✅ Running | 8/8 endpoints functional |
-| Frontend | ✅ Running | All pages consuming real data |
-| Database | ✅ Initialized | 7 tables, 19 runs, 62 signals |
-| Connectors | ✅ Active | 3/3 sources executing |
-| Scheduler | ✅ Active | Jobs registered and running |
-| Quality | ✅ Passing | 100% pass rate (57/57 checks) |
+| Backend API | Running | 8/8 endpoints functional |
+| Frontend | Running | Pages consuming real data |
+| Database | Initialized | 7 tables, 19 runs, 62 signals |
+| Connectors | Active | 3/3 sources executing |
+| Scheduler | Active | Jobs registered and running |
+| Quality | Passing | 100% pass rate reported |
 
-**Last Validated**: 2026-04-25 16:43 UTC
-
-See [VALIDATION.md](./VALIDATION.md) for full validation report.
+See [VALIDATION.md](./VALIDATION.md) for the full validation report.
 
 ---
 
-### Roadmap
+## 🗺️ Roadmap
 
 | Version | Status | Scope |
 |---|---|---|
-| **V1.0** | ✅ Shipped | 3 connectors · Full dashboard · Quality checks · Freshness monitoring |
-| **V1.1** | 🔜 Next | PostgreSQL · Docker · CI/CD · Deployment |
-| **V2.0** | 💡 Planned | More connectors · Alerting · Data export · Historical analytics |
+| V1.0 | Shipped | 3 connectors, dashboard, quality checks, freshness monitoring |
+| V1.1 | Next | PostgreSQL, Docker, CI/CD, deployment |
+| V2.0 | Planned | More connectors, alerting, data export, historical analytics |
 
 ---
 
-### Contributing
+## 📚 Documentation / Documentação
+
+- [DEVELOPER.md](./DEVELOPER.md) — development guide
+- [VALIDATION.md](./VALIDATION.md) — validation report
+- [API Docs](http://localhost:8000/docs) — local Swagger documentation
+
+---
+
+## 🤝 Contributing / Contribuição
 
 ```bash
 git checkout -b feature/your-feature
-git commit -m 'feat: describe your change'
+git commit -m "feat: describe your change"
 git push origin feature/your-feature
-# then open a Pull Request
 ```
 
-See [DEVELOPER.md](./DEVELOPER.md) for development guide.
+Then open a Pull Request.
 
 ---
 
-### License
+<a id="autor--author"></a>
 
-MIT — see [LICENSE](./LICENSE).
+## 👤 Autor / Author
 
----
+Developed by **Felipe Baruja** — Product Engineer · Data & Automation.
 
-### Author
-
-**Felipe Baruja** — Product Engineer · Data & Automation
-
-[LinkedIn](https://www.linkedin.com/in/barujafe) · [GitHub](https://github.com/BarujaFe1) · [Portfolio](https://barujafe.dev)
+- **Portfolio:** [https://barujafe.vercel.app/](https://barujafe.vercel.app/)
+- **GitHub:** [github.com/BarujaFe1](https://github.com/BarujaFe1)
+- **LinkedIn:** [linkedin.com/in/barujafe](https://www.linkedin.com/in/barujafe)
 
 ---
 
-<br/>
-<br/>
+## 📄 License / Licença
+
+MIT License.
+
+See [LICENSE](./LICENSE) for details.
 
 ---
 
-<h2 id="português">🇧🇷 Português</h2>
+## 🙏 Acknowledgments / Agradecimentos
 
-### Visão Geral
+Built with open-source tools:
 
-**SignalHub APIs** é uma plataforma de observabilidade de dados de nível portfólio que demonstra como construir sistemas backend confiáveis e transparentes. Integra APIs públicas heterogêneas (clima, moeda, cripto), normaliza seus dados em sinais unificados, rastreia histórico de execução, monitora frescor de dados, executa verificações de qualidade e expõe tudo através de um dashboard premium em Next.js.
-
-O trabalho de backend no mundo real é frequentemente invisível. Pipelines rodam silenciosamente, integrações quebram sem aviso, o frescor dos dados degrada sem visibilidade, e a qualidade erode sem verificações. SignalHub preenche essa lacuna tornando cada aspecto do pipeline de dados **observável, rastreável e explicável**.
-
-Diferente de ferramentas genéricas de monitoramento que apenas rastreiam uptime, ou dashboards simples que apenas exibem dados, SignalHub implementa o **ciclo de vida completo de engenharia de dados** — ingestão, validação, normalização, persistência, verificações de qualidade, monitoramento de frescor e visibilidade operacional.
-
-> 🎯 **Feito para portfólios:** Este projeto demonstra padrões de nível produção para engenharia de dados, integração de APIs, agendamento de jobs e observabilidade.
-
-### Demo ao Vivo
-
-🔗 **Em Breve** — Deploy em progresso
-
-**Demo Local:**
-```bash
-git clone https://github.com/BarujaFe1/signalhub-apis.git
-cd signalhub-apis
-start.bat  # Windows
-```
-
-Acesse:
-- **Frontend**: http://localhost:3001
-- **API Docs**: http://localhost:8000/docs
-- **Health Check**: http://localhost:8000/health
-
----
-
-### O Problema
-
-A maior parte do trabalho de backend e engenharia de dados é invisível:
-- ❌ Pipelines rodam silenciosamente
-- ❌ Integrações quebram sem ninguém saber
-- ❌ Frescor dos dados degrada sem visibilidade
-- ❌ Qualidade erode sem verificações
-- ❌ O trabalho é real, mas o resultado é oculto
-
-### A Solução
-
-**SignalHub APIs** torna o trabalho analítico de backend **visível**:
-
-| Trabalho Invisível | Resultado Visível |
-|---|---|
-| Integração entre fontes heterogêneas | **Conectores visíveis** com status |
-| Contratos de dados e normalização | **Schemas visíveis** e transformações |
-| Histórico de execução | **Timeline visível de runs** com métricas |
-| Frescor dos dados | **Indicadores visíveis de obsolescência** |
-| Gates de qualidade | **Resultados visíveis de checks** |
-| Clareza operacional | **Status visível do sistema** |
-
----
-
-### Funcionalidades
-
-#### 🔌 Integração de Dados
-- **3 Conectores de APIs Públicas**
-  - **Open-Meteo** — Dados climáticos (temperatura, umidade, velocidade do vento)
-  - **Frankfurter** — Taxas de câmbio (EUR para USD, GBP, BRL, etc.)
-  - **CoinGecko** — Preços de criptomoedas (BTC, ETH)
-- **Agendamento Automático** — Jobs executam a cada 15-60 minutos baseado na fonte
-- **Idempotência** — Previne runs duplicados na mesma janela de tempo
-- **Tratamento de Erros** — Falhas graciosas com logging detalhado de erros
-
-#### 🧹 Processamento de Dados
-- **Validação** — Schemas Pydantic garantem contratos de dados
-- **Normalização** — APIs heterogêneas → formato unificado de sinal
-- **Persistência** — Payloads brutos + sinais normalizados armazenados separadamente
-- **Deduplicação** — Chaves de idempotência previnem processamento duplicado
-
-#### 📊 Observabilidade
-- **Histórico de Execução** — Cada run rastreado com status, duração, registros processados
-- **Monitoramento de Frescor** — Indicadores de obsolescência em tempo real por fonte
-- **Verificações de Qualidade** — Validação automatizada de completude, range e consistência
-- **Métricas do Sistema** — Total de runs, sinais, taxa de aprovação de qualidade, fontes ativas
-
-#### 📈 Dashboard Premium
-- **Overview** — Cards KPI com métricas do sistema
-- **Sources** — Visualização em lista com status de frescor e último run
-- **Source Detail** — Mergulho profundo em runs, sinais e checks de qualidade por fonte
-- **Runs** — Histórico de execução paginado com filtros
-- **Quality** — Resultados de verificação de qualidade com breakdown pass/fail
-- **Dark Mode** — Detecção de preferência do sistema com toggle manual
-
----
-
-### Arquitetura
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      Frontend (Next.js)                      │
-│  Overview · Sources · Runs · Quality · Atualizações Real-time│
-└────────────────────────┬────────────────────────────────────┘
-                         │ HTTP/REST
-┌────────────────────────▼────────────────────────────────────┐
-│                    Backend API (FastAPI)                     │
-│  /health · /sources · /runs · /signals · /quality · /metrics│
-└────────────────────────┬────────────────────────────────────┘
-                         │
-        ┌────────────────┼────────────────┐
-        │                │                │
-┌───────▼──────┐ ┌──────▼──────┐ ┌──────▼──────┐
-│  APScheduler │ │   Database  │ │  Ingestion  │
-│   (Jobs)     │ │   (SQLite)  │ │  (Pipeline) │
-└───────┬──────┘ └─────────────┘ └──────┬──────┘
-        │                                │
-        │         ┌──────────────────────┘
-        │         │
-┌───────▼─────────▼──────────────────────────────────────────┐
-│                    Conectores                               │
-│  Open-Meteo · Frankfurter · CoinGecko                      │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-### Fluxo de Dados
-
-```
-[ API Pública ] → [ Conector ] → [ Validador ] → [ Normalizador ] → [ Persistidor ] → [ Verificador de Qualidade ] → [ Dashboard ]
-```
-
-| Etapa | Responsabilidade | Saída |
-|---|---|---|
-| **Fetch** | Requisição HTTP para API pública | Resposta JSON bruta |
-| **Validate** | Validação de schema Pydantic | Objeto de dados tipado |
-| **Normalize** | Transformar para formato unificado de sinal | `NormalizedSignal[]` |
-| **Persist** | Armazenar dados brutos + normalizados | Registros no banco |
-| **Quality Check** | Validar completude, range, consistência | `QualityCheck[]` |
-| **Update Freshness** | Calcular obsolescência | `FreshnessStatus` |
-| **Expose** | Endpoints REST API | Respostas JSON |
-
----
-
-### Stack Técnico
-
-#### Backend
-| Camada | Tecnologia |
-|---|---|
-| Framework | FastAPI 0.115 |
-| Linguagem | Python 3.12 |
-| Banco de Dados | SQLite (dev) / PostgreSQL (prod) |
-| ORM | SQLAlchemy 2.0 (async) |
-| Migrations | Alembic |
-| Validação | Pydantic 2.7 |
-| Agendamento | APScheduler 3.10 |
-| Cliente HTTP | httpx |
-
-#### Frontend
-| Camada | Tecnologia |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| Linguagem | TypeScript (strict) |
-| Estilização | Tailwind CSS + shadcn/ui |
-| Gráficos | Recharts |
-| Estado | React Context |
-| Ícones | Lucide React |
-
-#### DevOps
-| Ferramenta | Propósito |
-|---|---|
-| GitHub Actions | Pipeline CI/CD |
-| Docker | Containerização |
-| Vercel | Hospedagem frontend |
-| Railway/Render | Hospedagem backend (planejado) |
-
----
-
-### Como Começar
-
-#### Pré-requisitos
-- Python 3.12+
-- Node.js 20+
-- npm ou pnpm
-
-#### Início Rápido (Windows)
-```bash
-git clone https://github.com/BarujaFe1/signalhub-apis.git
-cd signalhub-apis
-start.bat
-```
-
-#### Início Manual
-```bash
-# Terminal 1 - Backend
-cd apps/api
-python -m venv venv
-venv\Scripts\activate  # Windows
-source venv/bin/activate  # Linux/Mac
-pip install -r requirements.txt
-set PYTHONPATH=C:\caminho\para\signalhub-apis\apps\api;C:\caminho\para\signalhub-apis
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
-# Terminal 2 - Frontend
-cd apps/web
-npm install
-npm run dev
-```
-
-#### Acesso
-- Frontend: http://localhost:3001
-- API: http://localhost:8000
-- API Docs: http://localhost:8000/docs
-- Health: http://localhost:8000/health
-
----
-
-### Relatório de Validação
-
-✅ **Status do Sistema**: Totalmente Operacional
-
-| Componente | Status | Detalhes |
-|---|---|---|
-| Backend API | ✅ Rodando | 8/8 endpoints funcionais |
-| Frontend | ✅ Rodando | Todas as páginas consumindo dados reais |
-| Database | ✅ Inicializado | 7 tabelas, 19 runs, 62 sinais |
-| Conectores | ✅ Ativos | 3/3 fontes executando |
-| Scheduler | ✅ Ativo | Jobs registrados e rodando |
-| Qualidade | ✅ Aprovado | 100% de aprovação (57/57 checks) |
-
-**Última Validação**: 2026-04-25 16:43 UTC
-
-Veja [VALIDATION.md](./VALIDATION.md) para relatório completo de validação.
-
----
-
-### Roadmap
-
-| Versão | Status | Escopo |
-|---|---|---|
-| **V1.0** | ✅ Lançado | 3 conectores · Dashboard completo · Checks de qualidade · Monitoramento de frescor |
-| **V1.1** | 🔜 Próximo | PostgreSQL · Docker · CI/CD · Deploy |
-| **V2.0** | 💡 Planejado | Mais conectores · Alertas · Export de dados · Analytics históricos |
-
----
-
-### Contribuindo
-
-```bash
-git checkout -b feature/sua-feature
-git commit -m 'feat: descreva sua mudança'
-git push origin feature/sua-feature
-# depois abra um Pull Request
-```
-
-Veja [DEVELOPER.md](./DEVELOPER.md) para guia de desenvolvimento.
-
----
-
-### Licença
-
-MIT — veja [LICENSE](./LICENSE).
-
----
-
-### Autor
-
-**Felipe Baruja** — Product Engineer · Data & Automation
-
-[LinkedIn](https://www.linkedin.com/in/barujafe) · [GitHub](https://github.com/BarujaFe1) · [Portfolio](https://barujafe.dev)
-
----
-
-### Agradecimentos
-
-Obrigado às ferramentas open-source que tornam isso possível:
 [FastAPI](https://fastapi.tiangolo.com/) · [Next.js](https://nextjs.org/) · [SQLAlchemy](https://www.sqlalchemy.org/) · [Pydantic](https://docs.pydantic.dev/) · [shadcn/ui](https://ui.shadcn.com/) · [Recharts](https://recharts.org/) · [APScheduler](https://apscheduler.readthedocs.io/)
+
+---
+
+<div align="center">
+  <p><strong>SignalHub APIs</strong></p>
+  <p>Backend analytics made visible, reliable and explainable.</p>
+  <p><em>Analytics de backend visível, confiável e explicável.</em></p>
+</div>
