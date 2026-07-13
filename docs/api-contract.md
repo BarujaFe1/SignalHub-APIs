@@ -1,196 +1,120 @@
-# API Contracts
+# API contracts — SignalHub
 
-## Base URL
+**Base URL (local):** `http://localhost:8000`  
+**Interactive:** `/docs` (Swagger) · `/redoc` · `/openapi.json`  
+**Reproducible requests:** [`docs/demo/signalhub.http`](demo/signalhub.http)
 
-```
-http://localhost:8000
-```
+## Consumers and guarantees
+
+| Consumer | Contract surface | Guarantee (V1) |
+|----------|------------------|----------------|
+| Next.js dashboard | `/api/v1/*` JSON | Field names match `apps/web/src/lib/types.ts` |
+| Humans / interviewers | OpenAPI + HTTP collection | Paths and status codes documented |
+| Upstream APIs | Pydantic contracts in `packages/ingestion/contracts` | Validate before normalize |
+
+## Auth & rate limits
+
+| Endpoint class | Auth | Rate limit |
+|----------------|------|------------|
+| `GET /*` (read) | None (local demo) | None |
+| `POST /api/v1/runs/trigger/{slug}` | Optional `X-API-Key` when `TRIGGER_API_KEY` is set | Process-local sliding window (`TRIGGER_RATE_LIMIT_PER_MINUTE`, default 10) |
+
+`429` responses include `Retry-After`.
 
 ## Endpoints
 
-### GET /health
+### `GET /health`
 
-System health check.
-
-**Response 200:**
 ```json
 {
   "status": "healthy",
   "database": "connected",
   "scheduler": "running",
-  "timestamp": "2024-01-15T10:30:00Z"
+  "timestamp": "2026-07-13T18:00:00Z"
 }
 ```
 
-### GET /api/v1/sources
+### `GET /api/v1/sources`
 
-List all sources with freshness summary.
+List sources with recomputed freshness and last run status.
 
-**Response 200:**
-```json
-[
-  {
-    "id": "uuid",
-    "slug": "open-meteo",
-    "name": "Open-Meteo Weather",
-    "description": "Current weather data for Berlin",
-    "api_base_url": "https://api.open-meteo.com",
-    "schedule_interval_minutes": 30,
-    "is_active": true,
-    "freshness": {
-      "last_success_at": "2024-01-15T10:00:00Z",
-      "is_stale": false,
-      "staleness_minutes": 15
-    },
-    "last_run_status": "success"
-  }
-]
-```
+### `GET /api/v1/sources/{slug}`
 
-### GET /api/v1/sources/{slug}
+Detail payload:
 
-Source detail with recent runs and signals.
-
-**Response 200:**
 ```json
 {
-  "source": { "..." },
-  "recent_runs": [ "..." ],
-  "recent_signals": [ "..." ],
-  "quality_summary": {
-    "total_checks": 12,
-    "passed": 10,
-    "warnings": 2,
-    "failures": 0
-  }
+  "source": { "slug": "open-meteo", "freshness": { "is_stale": false, "staleness_minutes": 12 } },
+  "recent_runs": [],
+  "recent_signals": [],
+  "recent_checks": [],
+  "quality_summary": { "total": 12, "passed": 10, "warnings": 2, "failures": 0 }
 }
 ```
 
-### GET /api/v1/runs
+Note: `quality_summary.total` (not `total_checks`).
 
-List recent runs. Supports `?source=slug&status=success&limit=50&offset=0`.
+### `GET /api/v1/runs`
 
-**Response 200:**
-```json
-{
-  "items": [
-    {
-      "id": "uuid",
-      "source_slug": "open-meteo",
-      "source_name": "Open-Meteo Weather",
-      "status": "success",
-      "started_at": "2024-01-15T10:00:00Z",
-      "duration_ms": 1250,
-      "records_fetched": 3,
-      "records_stored": 3
-    }
-  ],
-  "total": 150,
-  "limit": 50,
-  "offset": 0
-}
-```
+Query: `source`, `status` (`success|failed|running|partial`), `limit`, `offset`.
 
-### GET /api/v1/freshness
+### `GET /api/v1/runs/{run_id}`
 
-Freshness status per source.
+Single run by UUID.
 
-**Response 200:**
-```json
-[
-  {
-    "source_slug": "open-meteo",
-    "source_name": "Open-Meteo Weather",
-    "last_success_at": "2024-01-15T10:00:00Z",
-    "last_attempt_at": "2024-01-15T10:00:00Z",
-    "is_stale": false,
-    "staleness_minutes": 15
-  }
-]
-```
+### `GET /api/v1/freshness`
 
-### GET /api/v1/quality
+Per-source freshness with age recomputed on read from `last_success_at`.
 
-Quality checks with optional filters: `?source=slug&status=fail&limit=50`.
+### `GET /api/v1/quality`
 
-**Response 200:**
-```json
-{
-  "items": [
-    {
-      "id": "uuid",
-      "source_slug": "open-meteo",
-      "check_name": "null_check",
-      "check_status": "pass",
-      "expected_value": "non-null",
-      "actual_value": "23.5",
-      "message": "All critical fields present",
-      "checked_at": "2024-01-15T10:00:00Z"
-    }
-  ],
-  "summary": {
-    "total": 36,
-    "passed": 32,
-    "warnings": 4,
-    "failures": 0
-  }
-}
-```
+Query: `source`, `status` (`pass|warn|fail`), `limit`.  
+`summary` respects the same `source` filter as `items`.
 
-### GET /api/v1/signals
+### `GET /api/v1/signals`
 
-Recent normalized signals. Supports `?source=slug&type=weather&limit=50`.
+Query: `source`, `limit`, `offset`.
 
-**Response 200:**
-```json
-{
-  "items": [
-    {
-      "id": "uuid",
-      "source_slug": "open-meteo",
-      "signal_type": "weather",
-      "signal_key": "temperature_celsius",
-      "signal_value": 23.5,
-      "signal_unit": "°C",
-      "observed_at": "2024-01-15T10:00:00Z"
-    }
-  ],
-  "total": 500,
-  "limit": 50,
-  "offset": 0
-}
-```
+### `GET /api/v1/metrics/summary`
 
-### GET /api/v1/metrics/summary
+Aggregate KPIs for the overview page.
 
-System-wide metrics.
+### `POST /api/v1/runs/trigger/{slug}`
 
-**Response 200:**
-```json
-{
-  "total_sources": 3,
-  "active_sources": 3,
-  "total_runs": 150,
-  "successful_runs": 142,
-  "failed_runs": 8,
-  "total_signals": 1250,
-  "total_quality_checks": 450,
-  "quality_pass_rate": 0.95,
-  "sources_stale": 0,
-  "last_activity_at": "2024-01-15T10:00:00Z"
-}
-```
+Synchronous pipeline execution. Response reflects final status:
 
-### POST /api/v1/runs/trigger/{slug}
-
-Manually trigger a connector run.
-
-**Response 202:**
 ```json
 {
   "run_id": "uuid",
   "source_slug": "open-meteo",
-  "status": "running",
-  "message": "Run triggered successfully"
+  "status": "success",
+  "message": "Run completed successfully"
 }
 ```
+
+## Canonical signal shape
+
+Normalized rows stored in `normalized_signals`:
+
+| Field | Meaning |
+|-------|---------|
+| `signal_type` | Domain bucket (`weather`, `exchange_rate`, `crypto_price`) |
+| `signal_key` | Stable metric id (`temperature_celsius`, `EUR_USD`, `bitcoin_usd`) |
+| `signal_value` | Numeric value |
+| `signal_unit` | Display unit |
+| `observed_at` | Observation timestamp (UTC) |
+
+## Drift policy
+
+Quality check `schema_drift` warns when **required** keys are missing from the raw payload. Extra upstream fields are allowed.
+
+## Export OpenAPI
+
+With the API running:
+
+```powershell
+Invoke-RestMethod http://localhost:8000/openapi.json | ConvertTo-Json -Depth 40 |
+  Set-Content docs/demo/openapi.snapshot.json
+```
+
+Or in CI/tests: `app.openapi()` (see `apps/api/tests/test_contracts.py`).

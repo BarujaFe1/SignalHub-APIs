@@ -1,23 +1,21 @@
-# Screenshots Placeholder
+# Screenshots
 
-This directory will contain screenshots of the SignalHub APIs dashboard.
+Real dashboard captures (no PII — public APIs / demo data only).
 
-## Required Screenshots
+| File | Contents |
+|------|----------|
+| `01-overview-dashboard.png` | Overview KPIs and system pulse |
+| `02-runs-timeline.png` | Runs history |
+| `03-source-detail.png` | Source detail / freshness |
+| `04-quality-checks.png` | Quality gates |
+| `05-swagger-ui.png` | OpenAPI Swagger UI |
 
-1. **01-overview-dashboard.png** - Overview page with KPI cards and metrics
-2. **02-runs-timeline.png** - Runs page showing execution history
-3. **03-source-detail.png** - Source detail page with freshness and quality
-4. **04-quality-checks.png** - Quality checks page with pass/fail breakdown
-5. **05-swagger-ui.png** - Swagger UI showing API endpoints
+## How to re-capture
 
-## How to Capture
+1. Seed + start API on `:8000` and web on `:3000` (see root README).
+2. Trigger at least one successful run (`Run now` or HTTP collection).
+3. Use browser width ≥ 1280px; prefer light or dark consistently.
+4. Avoid personal emails, private keys, or local absolute paths in the frame.
+5. Overwrite the PNGs above with the same filenames.
 
-1. Start the backend: `cd apps/api && uvicorn app.main:app --reload`
-2. Start the frontend: `cd apps/web && npm run dev`
-3. Navigate to http://localhost:3001
-4. Capture screenshots of each page
-5. Save them in this directory with the names above
-
-## Note
-
-Screenshots should be captured with the system running and showing real data from the database.
+Port note: dashboard is **`:3000`** (not 3001).

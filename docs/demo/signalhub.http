@@ -1,0 +1,42 @@
+# SignalHub APIs — reproducible demo requests
+# Use with VS Code REST Client, JetBrains HTTP Client, or curl.
+# Prerequisites: API running on :8000 with seeded sources.
+#
+#   cd apps/api
+#   python ../../scripts/seed.py
+#   uvicorn app.main:app --reload --port 8000
+
+@baseUrl = http://localhost:8000
+@apiKey = {{$dotenv TRIGGER_API_KEY}}
+
+### 1. Health
+GET {{baseUrl}}/health
+
+### 2. List sources (contracts + freshness)
+GET {{baseUrl}}/api/v1/sources
+
+### 3. Source detail (runs, signals, QC scoped to source)
+GET {{baseUrl}}/api/v1/sources/open-meteo
+
+### 4. Metrics summary (ops KPIs)
+GET {{baseUrl}}/api/v1/metrics/summary
+
+### 5. Recent runs
+GET {{baseUrl}}/api/v1/runs?limit=10
+
+### 6. Freshness
+GET {{baseUrl}}/api/v1/freshness
+
+### 7. Quality checks
+GET {{baseUrl}}/api/v1/quality?source=open-meteo&limit=20
+
+### 8. Normalized signals
+GET {{baseUrl}}/api/v1/signals?source=open-meteo&limit=20
+
+### 9. Trigger ingestion (omit X-API-Key if TRIGGER_API_KEY is empty)
+POST {{baseUrl}}/api/v1/runs/trigger/open-meteo
+X-API-Key: {{apiKey}}
+Content-Type: application/json
+
+### 10. OpenAPI JSON (machine-readable contract)
+GET {{baseUrl}}/openapi.json

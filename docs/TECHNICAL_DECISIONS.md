@@ -18,6 +18,12 @@
 **Why:** Public demos must not let strangers hammer CoinGecko/Open-Meteo.  
 **Trade-off:** Browser demos that need the key must expose `NEXT_PUBLIC_TRIGGER_API_KEY` — use throwaway demo keys only.
 
+## Process-local trigger rate limit
+
+**Decision:** Sliding-window limiter (default 10/min per source slug) on trigger.  
+**Why:** Cheap abuse protection without Redis.  
+**Trade-off:** Not shared across workers/instances; fine for lab/single process.
+
 ## Freshness computed on read
 
 **Decision:** API recomputes `staleness_minutes` / `is_stale` from `last_success_at` + schedule interval.  

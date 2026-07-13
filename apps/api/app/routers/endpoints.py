@@ -11,6 +11,7 @@ from sqlalchemy.orm import selectinload
 from app.config import get_settings
 from app.db.engine import get_db
 from app.db.models import Run
+from app.services.rate_limit import SlidingWindowRateLimiter
 from app.services.queries import (
     get_all_sources, get_source_by_slug, count_signals_by_source,
     count_runs_by_source, get_last_run_status,
@@ -27,6 +28,19 @@ from app.schemas.responses import (
     QualityCheckOut, QualityResponse, QualitySummary,
     MetricsSummaryOut, TriggerOut,
 )
+
+_trigger_limiter: SlidingWindowRateLimiter | None = None
+
+
+def _get_trigger_limiter() -> SlidingWindowRateLimiter:
+    global _trigger_limiter
+    settings = get_settings()
+    if _trigger_limiter is None:
+        _trigger_limiter = SlidingWindowRateLimiter(
+            max_requests=settings.trigger_rate_limit_per_minute,
+            window_seconds=60,
+        )
+    return _trigger_limiter
 
 
 def _freshness_out(source, freshness) -> FreshnessOut | None:
@@ -253,13 +267,36 @@ def _require_trigger_auth(x_api_key: str | None) -> None:
         raise HTTPException(status_code=401, detail="Invalid or missing X-API-Key")
 
 
-@trigger_router.post("/runs/trigger/{slug}", response_model=TriggerOut, status_code=202)
+@trigger_router.post(
+    "/runs/trigger/{slug}",
+    response_model=TriggerOut,
+    status_code=202,
+    summary="Trigger a connector run",
+    description=(
+        "Synchronously executes the ingestion pipeline for a source. "
+        "Optional header `X-API-Key` required when `TRIGGER_API_KEY` is set. "
+        "Rate-limited per process (default 10/min)."
+    ),
+    responses={
+        401: {"description": "Missing/invalid API key when auth is enabled"},
+        404: {"description": "Unknown source slug"},
+        429: {"description": "Trigger rate limit exceeded"},
+    },
+)
 async def trigger_run(
     slug: str,
     db: AsyncSession = Depends(get_db),
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
 ):
     _require_trigger_auth(x_api_key)
+
+    allowed, retry_after = _get_trigger_limiter().allow(key=f"trigger:{slug}")
+    if not allowed:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Rate limit exceeded. Retry after {retry_after}s",
+            headers={"Retry-After": str(retry_after)},
+        )
 
     source = await get_source_by_slug(db, slug)
     if not source:

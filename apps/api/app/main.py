@@ -100,9 +100,24 @@ settings = get_settings()
 
 app = FastAPI(
     title="SignalHub APIs",
-    description="Backend analytics made visible. Integrates public APIs, normalizes data, tracks freshness and quality.",
+    description=(
+        "Observability layer for public-API ingestion. "
+        "Normalizes heterogeneous upstream payloads into signals, "
+        "tracks runs/freshness/quality, and exposes an ops-friendly REST API. "
+        "Interactive docs: `/docs` (Swagger) and `/redoc`."
+    ),
     version="1.0.0",
     lifespan=lifespan,
+    openapi_tags=[
+        {"name": "health", "description": "Liveness and dependency checks"},
+        {"name": "sources", "description": "Registered connectors and detail views"},
+        {"name": "runs", "description": "Ingestion execution history"},
+        {"name": "freshness", "description": "Staleness indicators per source"},
+        {"name": "quality", "description": "Per-run quality gate results"},
+        {"name": "signals", "description": "Normalized numeric signals"},
+        {"name": "metrics", "description": "Aggregate operational KPIs"},
+        {"name": "triggers", "description": "Manual ingestion triggers (auth + rate limit)"},
+    ],
 )
 
 # CORS

@@ -2,11 +2,11 @@
 
 # SignalHub APIs
 
-**Backend analytics made visible, reliable, and explainable**
+**Make public-API ingestion visible, auditable, and explainable**
 
-Integrates public APIs → normalizes signals → tracks runs, freshness & quality → exposes an ops dashboard.
+Lab de observabilidade para integrações: conectores → contratos → qualidade → frescor → dashboard operacional.
 
-[PT-BR below](#pt-br) · [Architecture](docs/architecture.md) · [API contract](docs/api-contract.md) · [Deployment](docs/DEPLOYMENT.md) · [Testing](docs/TESTING.md)
+[Problem statement](docs/PROBLEM_STATEMENT.md) · [Architecture](docs/architecture.md) · [API contract](docs/api-contract.md) · [Demo HTTP](docs/demo/signalhub.http) · [Interview demo](docs/demo-script.md)
 
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js&logoColor=white)
@@ -18,126 +18,112 @@ Integrates public APIs → normalizes signals → tracks runs, freshness & quali
 
 ---
 
-## Screenshot placeholder
+## Screenshots
 
-> Add PNGs under `docs/screenshots/` (see that folder’s README). Until then, open the live UI locally:
+![Overview](docs/screenshots/01-overview-dashboard.png)
 
-| Surface | URL |
-|---------|-----|
-| Dashboard | http://localhost:3000 |
-| OpenAPI / Swagger | http://localhost:8000/docs |
+![Runs](docs/screenshots/02-runs-timeline.png)
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│  SignalHub · Overview                                       │
-│  Sources active · Runs · Quality pass rate · Freshness      │
-│  ─────────────────────────────────────────────────────────  │
-│  open-meteo │ frankfurter │ coingecko   [Run now]           │
-└─────────────────────────────────────────────────────────────┘
-```
+![Source detail](docs/screenshots/03-source-detail.png)
+
+![Quality](docs/screenshots/04-quality-checks.png)
+
+![Swagger / OpenAPI](docs/screenshots/05-swagger-ui.png)
 
 ---
 
-<a id="pt-br"></a>
+## Problem & audience
 
-## Problema real
+**Audience:** analytics engineers, data engineers, and full-stack builders who integrate heterogeneous APIs and need to *trust* the results.
 
-Pipelines e integrações costumam ser caixas-pretas: falham sem aviso claro, dados envelhecem sem indicador, qualidade degrada sem gate, e o histórico de execução some em logs. Times de produto e engenharia não conseguem responder rápido: *a fonte está viva? a última run falhou? os dados ainda estão frescos?*
+**Problem:** pipelines fail quietly, schemas drift, data goes stale, and run history lives only in logs — so nobody can answer “is this source healthy right now?”
 
-## Solução
+**What SignalHub enables:** an explainable loop — ingest → validate → normalize → persist → observe freshness/QC → decide whether to trust the data.
 
-**SignalHub** transforma APIs públicas heterogêneas em uma camada observável de sinais:
+Full write-up: [docs/PROBLEM_STATEMENT.md](docs/PROBLEM_STATEMENT.md)
 
-1. **Ingestão** via conectores (Open-Meteo, Frankfurter, CoinGecko)
-2. **Validação** com contratos Pydantic + checks de qualidade
-3. **Normalização** para um modelo canônico de sinais
-4. **Persistência** com histórico de runs, payload bruto e eventos
-5. **Frescor** recalculado na leitura a partir do último sucesso
-6. **Dashboard** Next.js para operação e storytelling técnico
+---
 
-## Principais funcionalidades
-
-- 3 conectores reais com agendamento (APScheduler) e trigger manual
-- Idempotência por janela horária
-- Quality gates: null, volume, range, schema (campos obrigatórios)
-- API REST versionada (`/api/v1`) com OpenAPI automático
-- Dashboard: overview, sources, detalhe com **Run now**, runs, quality
-- SQLite out-of-the-box; Postgres opcional via Docker Compose
-- Gate opcional `TRIGGER_API_KEY` para demos públicas
-
-## Arquitetura
+## Solution (flow)
 
 ```text
-Public APIs → packages/ingestion → SQLite/Postgres → FastAPI → Next.js
-                 contracts + QC         7 tables      /docs      ops UI
+Open-Meteo / Frankfurter / CoinGecko
+        │
+        ▼
+ packages/ingestion  (contracts + normalize + quality)
+        │
+        ▼
+ SQLite (local) or Postgres
+        │
+        ├─► FastAPI /api/v1 + OpenAPI (/docs)
+        └─► Next.js ops dashboard (:3000)
 ```
 
-Detalhes: [docs/architecture.md](docs/architecture.md) · decisões: [docs/TECHNICAL_DECISIONS.md](docs/TECHNICAL_DECISIONS.md)
+## What this project demonstrates
 
-## Stack
+- Domain modeling for **data observability** (runs, freshness, quality, signals)
+- **Pydantic contracts** at the edge of third-party APIs
+- Idempotent scheduled jobs + manual trigger with optional API key and rate limit
+- Typed REST API with OpenAPI as the source of truth
+- TypeScript ops UI that consumes the same contract
+- Honest lab scope: clone → seed → demo in minutes (SQLite-first)
 
-| Camada | Tecnologias |
-|--------|-------------|
-| API | Python 3.12, FastAPI, SQLAlchemy 2 (async), Alembic, APScheduler, httpx, Pydantic v2 |
-| Ingestion | Conectores + contracts + quality checks |
-| Web | Next.js 16, React 19, TypeScript, Tailwind 4, shadcn/ui |
-| Data | SQLite (local) / PostgreSQL (Compose/prod) |
-| CI | GitHub Actions — Ruff, pytest, ESLint, `tsc`, `next build` |
+## Architecture & stack
 
-## Demo local (Windows / PowerShell)
+| Layer | Tech |
+|-------|------|
+| API | Python 3.12, FastAPI, SQLAlchemy async, Alembic, APScheduler, httpx |
+| Ingestion | Connectors + contracts + QC in `packages/ingestion` |
+| Web | Next.js 16, React 19, TypeScript, Tailwind 4 |
+| Data | SQLite local / Postgres optional (Compose) |
+| Quality gates | GitHub Actions: Ruff, pytest, ESLint, `tsc`, `next build` |
 
-Pré-requisitos: Python 3.12+, Node 22+, npm.
+Details: [docs/architecture.md](docs/architecture.md) · [docs/TECHNICAL_DECISIONS.md](docs/TECHNICAL_DECISIONS.md)
+
+## Quick start (Windows / PowerShell)
+
+Requires Python 3.12+ and Node 22+.
 
 ```powershell
-# 1) Backend
 cd apps\api
 python -m venv .venv
 .\.venv\Scripts\activate
 pip install -r requirements.txt
 $env:PYTHONPATH = "$PWD;$((Resolve-Path ..\..).Path)"
 python ..\..\scripts\seed.py
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --port 8000
+```
 
-# 2) Frontend (outro terminal)
+```powershell
 cd apps\web
 npm install
 npm run dev
 ```
 
-Atalho Windows: `.\start.bat` na raiz do repositório.
+Or `.\start.bat` from the repo root.
 
-| Serviço | URL |
+| Surface | URL |
 |---------|-----|
-| API | http://localhost:8000 |
-| Swagger | http://localhost:8000/docs |
 | Dashboard | http://localhost:3000 |
+| Swagger | http://localhost:8000/docs |
+| HTTP collection | [docs/demo/signalhub.http](docs/demo/signalhub.http) |
 
-Depois abra **Sources → detalhe → Run now** para ingerir dados ao vivo.
+Then: **Sources → open-meteo → Run now**.
 
-### Make (Git Bash / WSL / macOS)
+## Environment
 
-```bash
-make seed && make api   # terminal 1
-make web                # terminal 2
-make test
-make lint
-```
+Copy [`.env.example`](.env.example) → `.env`.
 
-## Variáveis de ambiente
+| Variable | Default | Notes |
+|----------|---------|-------|
+| `DATABASE_URL` | SQLite | Postgres optional |
+| `TRIGGER_API_KEY` | empty | Set for public demos |
+| `TRIGGER_RATE_LIMIT_PER_MINUTE` | `10` | Per source slug, process-local |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | Web → API |
 
-Copie [`.env.example`](.env.example) → `.env`.
+Security notes: [docs/SECURITY_NOTES.md](docs/SECURITY_NOTES.md)
 
-| Variável | Padrão | Notas |
-|----------|--------|-------|
-| `DATABASE_URL` | SQLite async | Postgres opcional |
-| `CORS_ORIGINS` | localhost:3000 | Ajuste no deploy |
-| `TRIGGER_API_KEY` | vazio | Defina em demos públicas |
-| `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | URL da API para o web |
-| `COINGECKO_API_KEY` | vazio | Opcional (rate limit) |
-
-Segurança: [docs/SECURITY_NOTES.md](docs/SECURITY_NOTES.md)
-
-## Testes
+## Tests & gates
 
 ```powershell
 $env:PYTHONPATH = "$PWD\apps\api;$PWD"
@@ -150,54 +136,32 @@ npx tsc --noEmit
 npm run build
 ```
 
-Guia: [docs/TESTING.md](docs/TESTING.md)
+Includes OpenAPI path/contract tests and trigger rate-limit regression.
 
-## Decisões técnicas e trade-offs
+## Decisions & trade-offs
 
-- **SQLite-first** para DX de portfólio; Postgres quando precisar de deploy real.
-- **Trigger síncrono** simplifica a demo; produção deveria enfileirar jobs.
-- **Freshness na leitura** evita “Fresh (0m ago)” mentiroso.
-- **Sem Recharts no V1** — KPIs e tabelas primeiro; charts no roadmap.
-- **Auth mínima** — só no trigger; leitura aberta para demo local.
+- SQLite-first DX vs Postgres for shared deploy
+- Synchronous trigger (great for demos; queue later for scale)
+- Freshness recomputed on read
+- No chart library in V1 (tables/KPIs only)
+- Read endpoints open locally; write path gated + rate-limited
 
-Mais: [docs/TECHNICAL_DECISIONS.md](docs/TECHNICAL_DECISIONS.md)
+## Status & limitations
 
-## Roadmap
+**Status:** local lab demo is reproducible; CI covers lint/test/build.  
+**No public production deploy is claimed** in this pass — host API (always-on) + Vercel for web when you need a URL ([docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)).
 
-- [ ] Charts de tendência (runs / freshness)
-- [ ] Expor `event_logs` na API
-- [ ] Fila assíncrona para triggers
-- [ ] Auth de leitura para demos públicas
-- [ ] Playwright smoke tests
+Limitations: no multi-tenant auth, no job queue, no Playwright e2e, Compose not required for the happy path.
 
-## Status atual
+## Interview script (3–5 min)
 
-**Portfolio-ready local demo.** Core pipeline operacional com SQLite. Docker Compose disponível se Docker estiver instalado. CI cobre lint/test/build. Deploy: API em host always-on + web na Vercel — ver [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+See [docs/demo-script.md](docs/demo-script.md).
 
-## O que este projeto demonstra
-
-- Modelagem de domínio para observabilidade de dados
-- Contratos Pydantic na borda de APIs externas
-- Pipelines com qualidade, idempotência e frescor
-- API FastAPI bem tipada + OpenAPI
-- Frontend TypeScript operacional (não só marketing page)
-- DX: seed, scripts portáveis, CI, docs honestas
-- Conciência de segurança em demos públicas
-
-## Como eu apresentaria em entrevista
-
-1. **Problema (30s):** integrações invisíveis e dados velhos sem sinal.
-2. **Demo (2 min):** Swagger → trigger → dashboard (status, duração, QC, freshness).
-3. **Arquitetura (2 min):** monorepo `apps/` + `packages/ingestion`, 7 tabelas, scheduler.
-4. **Trade-offs (1 min):** SQLite vs Postgres; trigger síncrono; auth só no write path.
-5. **Próximo passo (30s):** fila + charts + testes e2e.
-
----
-
-## English summary
-
-SignalHub is a portfolio-grade observability layer for public API ingestion: connectors normalize weather, FX, and crypto into signals; FastAPI exposes runs/freshness/quality; Next.js makes the pipeline explainable. Clone, seed SQLite, run API + web, hit **Run now**.
+1. Problem of invisible pipelines  
+2. Run now → runs / signals / QC / freshness  
+3. OpenAPI + HTTP collection as evidence of contracts  
+4. Trade-offs and next steps  
 
 ## License
 
-MIT · Felipe Alirio Baruja
+MIT · Felipe Alírio Baruja

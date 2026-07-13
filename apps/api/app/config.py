@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     # Optional gate for POST /runs/trigger (empty = open for local demo)
     trigger_api_key: str = ""
 
+    # Process-local rate limit for trigger endpoint
+    trigger_rate_limit_per_minute: int = 10
+
     model_config = {"env_file": ".env", "extra": "ignore"}
 
 

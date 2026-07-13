@@ -8,6 +8,8 @@
 
 **Mitigation:** optional `TRIGGER_API_KEY`. When set, requests must send `X-API-Key`. When empty (local demo), the endpoint remains open by design — do not expose that mode publicly.
 
+**Additional mitigation:** process-local sliding-window rate limit (`TRIGGER_RATE_LIMIT_PER_MINUTE`, default 10) returns `429` + `Retry-After`. Not a distributed limiter.
+
 ### No secrets committed
 
 No live API keys or production credentials were found in the repository. `.env` remains gitignored. `.env.example` uses placeholder values only.
