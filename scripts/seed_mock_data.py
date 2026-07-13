@@ -1,16 +1,15 @@
 """Seed the database with mock ingestion data, bypassing network calls."""
-import sys
-import os
-
-sys.path.insert(0, r"C:\dev\signalhub-apis\apps\api")
-sys.path.insert(0, r"C:\dev\signalhub-apis")
-
 import asyncio
 import uuid
 import hashlib
 import json
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import select
+
+from scripts._paths import ensure_repo_paths
+
+ensure_repo_paths()
+
 from app.db.engine import AsyncSessionLocal
 from app.db.models import (
     Source, Run, RawPayload, NormalizedSignal,
