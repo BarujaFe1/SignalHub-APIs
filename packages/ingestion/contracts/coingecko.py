@@ -1,7 +1,6 @@
 """CoinGecko API contracts."""
 
-from typing import Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CoinGeckoInputParams(BaseModel):
@@ -32,8 +31,7 @@ class CoinGeckoCoinData(BaseModel):
     usd_24h_change: float | None = None
     usd_market_cap: float | None = None
     
-    class Config:
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
 
 class CoinGeckoRawResponse(BaseModel):
@@ -47,8 +45,7 @@ class CoinGeckoRawResponse(BaseModel):
     ethereum: CoinGeckoCoinData | None = None
     solana: CoinGeckoCoinData | None = None
     
-    class Config:
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
 
 class CoinGeckoExpectedErrors:

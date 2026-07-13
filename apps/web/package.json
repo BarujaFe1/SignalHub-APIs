@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint . --max-warnings=20",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"No frontend unit tests yet\""
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

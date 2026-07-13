@@ -11,6 +11,7 @@ import type {
 } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const TRIGGER_API_KEY = process.env.NEXT_PUBLIC_TRIGGER_API_KEY || "";
 
 async function fetchAPI<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -52,6 +53,19 @@ export const api = {
     return fetchAPI<PaginatedResponse<NormalizedSignal>>(`/api/v1/signals${qs ? `?${qs}` : ""}`);
   },
   metrics: () => fetchAPI<MetricsSummary>("/api/v1/metrics/summary"),
-  triggerRun: (slug: string) =>
-    fetch(`${API_BASE}/api/v1/runs/trigger/${slug}`, { method: "POST" }).then((r) => r.json()),
+  triggerRun: async (slug: string) => {
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (TRIGGER_API_KEY) {
+      headers["X-API-Key"] = TRIGGER_API_KEY;
+    }
+    const res = await fetch(`${API_BASE}/api/v1/runs/trigger/${slug}`, {
+      method: "POST",
+      headers,
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(body.detail || `Trigger failed: ${res.status}`);
+    }
+    return body as { run_id: string; source_slug: string; status: string; message: string };
+  },
 };

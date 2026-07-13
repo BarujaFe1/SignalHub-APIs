@@ -1,7 +1,6 @@
 """Simple endpoint validation test."""
-import sys
-sys.path.insert(0, r"C:\dev\signalhub-apis\apps\api")
-sys.path.insert(0, r"C:\dev\signalhub-apis")
+from scripts._paths import ensure_repo_paths
+ensure_repo_paths()
 
 from fastapi.testclient import TestClient
 from app.main import app

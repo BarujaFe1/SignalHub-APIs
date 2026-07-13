@@ -2,53 +2,64 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, chore/**]
   pull_request:
     branches: [main]
 
 jobs:
-  lint:
-    name: Lint with Ruff
+  api-lint:
+    name: API lint (Ruff)
     runs-on: ubuntu-latest
-    
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-          cache: 'pip'
-      
-      - name: Install dependencies
-        run: |
-          cd apps/api
-          pip install -r requirements.txt
-      
-      - name: Run Ruff
-        run: |
-          cd apps/api
-          ruff check .
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/api/requirements.txt
+      - name: Install
+        run: pip install -r apps/api/requirements.txt
+      - name: Ruff
+        run: ruff check .
+        working-directory: apps/api
 
-  test:
-    name: Run Tests
+  api-test:
+    name: API + ingestion tests
     runs-on: ubuntu-latest
-    
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-          cache: 'pip'
-      
-      - name: Install dependencies
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/api/requirements.txt
+      - name: Install
+        run: pip install -r apps/api/requirements.txt
+      - name: Pytest
+        env:
+          PYTHONPATH: ${{ github.workspace }}/apps/api:${{ github.workspace }}
+          DATABASE_URL: sqlite+aiosqlite:///:memory:
+          DATABASE_URL_SYNC: sqlite:///:memory:
+          TRIGGER_API_KEY: test-secret
         run: |
-          cd apps/api
-          pip install -r requirements.txt
-      
-      - name: Run pytest
-        run: |
-          cd packages/ingestion
-          pytest tests/ -v
+          pytest packages/ingestion/tests apps/api/tests -v
+
+  web-lint-build:
+    name: Web lint + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc --noEmit
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000

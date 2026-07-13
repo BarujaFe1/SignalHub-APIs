@@ -15,7 +15,10 @@ const statusConfig: Record<RunStatus, { label: string; className: string }> = {
 export function StatusBadge({ status, className }: { status: RunStatus; className?: string }) {
   const config = statusConfig[status];
   return (
-    <span className={cn(
+    <span
+      role="status"
+      aria-label={`Run status: ${config.label}`}
+      className={cn(
       "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium tracking-tight",
       config.className,
       className,
@@ -25,7 +28,7 @@ export function StatusBadge({ status, className }: { status: RunStatus; classNam
         "bg-signal-error": status === "failed",
         "bg-blue-500": status === "running",
         "bg-signal-warning": status === "partial",
-      })} />
+      })} aria-hidden="true" />
       {config.label}
     </span>
   );
@@ -55,15 +58,19 @@ export function CheckBadge({ status, className }: { status: CheckStatus; classNa
 // ─── Freshness Pill ───────────────────────────────────────
 
 export function FreshnessPill({ isStale, minutes }: { isStale: boolean; minutes: number }) {
+  const label = isStale ? `Stale (${minutes}m)` : minutes <= 0 ? "Fresh (just now)" : `Fresh (${minutes}m ago)`;
   return (
-    <span className={cn(
+    <span
+      role="status"
+      aria-label={label}
+      className={cn(
       "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
       isStale
         ? "bg-amber-50 text-signal-warning dark:bg-amber-950/30"
         : "bg-signal-teal-subtle text-signal-success"
     )}>
-      <span className={cn("h-1.5 w-1.5 rounded-full", isStale ? "bg-signal-warning" : "bg-signal-success")} />
-      {isStale ? `Stale (${minutes}m)` : `Fresh (${minutes}m ago)`}
+      <span className={cn("h-1.5 w-1.5 rounded-full", isStale ? "bg-signal-warning" : "bg-signal-success")} aria-hidden="true" />
+      {label}
     </span>
   );
 }

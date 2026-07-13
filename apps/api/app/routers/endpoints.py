@@ -3,18 +3,21 @@
 from datetime import datetime, timezone
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import text
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
+from sqlalchemy import text, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
+from app.config import get_settings
 from app.db.engine import get_db
+from app.db.models import Run
 from app.services.queries import (
     get_all_sources, get_source_by_slug, count_signals_by_source,
     count_runs_by_source, get_last_run_status,
     get_runs, get_run_by_id,
     get_signals,
     get_all_freshness,
-    get_quality_checks, get_quality_summary,
+    get_quality_checks, get_quality_summary, compute_freshness_age,
     get_metrics_summary,
 )
 from app.schemas.responses import (
@@ -26,23 +29,43 @@ from app.schemas.responses import (
 )
 
 
+def _freshness_out(source, freshness) -> FreshnessOut | None:
+    if not freshness:
+        return None
+    is_stale, minutes = compute_freshness_age(
+        freshness.last_success_at,
+        source.schedule_interval_minutes,
+    )
+    return FreshnessOut(
+        source_slug=source.slug,
+        source_name=source.name,
+        last_success_at=freshness.last_success_at,
+        last_attempt_at=freshness.last_attempt_at,
+        is_stale=is_stale,
+        staleness_minutes=minutes,
+    )
+
+
 # ─── Health ───────────────────────────────────────────────
 
 health_router = APIRouter(tags=["health"])
 
 
 @health_router.get("/health", response_model=HealthOut)
-async def health_check(db: AsyncSession = Depends(get_db)):
+async def health_check(request: Request, db: AsyncSession = Depends(get_db)):
     try:
         await db.execute(text("SELECT 1"))
         db_status = "connected"
     except Exception:
         db_status = "disconnected"
 
+    sched = getattr(request.app.state, "scheduler", None)
+    scheduler_status = "running" if sched is not None and getattr(sched, "running", False) else "stopped"
+
     return HealthOut(
         status="healthy" if db_status == "connected" else "degraded",
         database=db_status,
-        scheduler="running",
+        scheduler=scheduler_status,
         timestamp=datetime.now(timezone.utc),
     )
 
@@ -61,17 +84,6 @@ async def list_sources(db: AsyncSession = Depends(get_db)):
         total_runs = await count_runs_by_source(db, s.id)
         last_status = await get_last_run_status(db, s.id)
 
-        freshness = None
-        if s.freshness:
-            freshness = FreshnessOut(
-                source_slug=s.slug,
-                source_name=s.name,
-                last_success_at=s.freshness.last_success_at,
-                last_attempt_at=s.freshness.last_attempt_at,
-                is_stale=s.freshness.is_stale,
-                staleness_minutes=s.freshness.staleness_minutes,
-            )
-
         result.append(SourceOut(
             id=s.id,
             slug=s.slug,
@@ -82,7 +94,7 @@ async def list_sources(db: AsyncSession = Depends(get_db)):
             is_active=s.is_active,
             created_at=s.created_at,
             updated_at=s.updated_at,
-            freshness=freshness,
+            freshness=_freshness_out(s, s.freshness),
             last_run_status=last_status,
             total_signals=total_signals,
             total_runs=total_runs,
@@ -100,23 +112,12 @@ async def get_source_detail(slug: str, db: AsyncSession = Depends(get_db)):
     total_runs_count = await count_runs_by_source(db, source.id)
     last_status = await get_last_run_status(db, source.id)
 
-    freshness = None
-    if source.freshness:
-        freshness = FreshnessOut(
-            source_slug=source.slug,
-            source_name=source.name,
-            last_success_at=source.freshness.last_success_at,
-            last_attempt_at=source.freshness.last_attempt_at,
-            is_stale=source.freshness.is_stale,
-            staleness_minutes=source.freshness.staleness_minutes,
-        )
-
     source_out = SourceOut(
         id=source.id, slug=source.slug, name=source.name,
         description=source.description, api_base_url=source.api_base_url,
         schedule_interval_minutes=source.schedule_interval_minutes,
         is_active=source.is_active, created_at=source.created_at,
-        updated_at=source.updated_at, freshness=freshness,
+        updated_at=source.updated_at, freshness=_freshness_out(source, source.freshness),
         last_run_status=last_status, total_signals=total_signals,
         total_runs=total_runs_count,
     )
@@ -130,7 +131,7 @@ async def get_source_detail(slug: str, db: AsyncSession = Depends(get_db)):
     checks = await get_quality_checks(db, source_slug=slug, limit=20)
     checks_out = [_check_to_out(c) for c in checks]
 
-    qs = await get_quality_summary(db)
+    qs = await get_quality_summary(db, source_slug=slug)
 
     return SourceDetailOut(
         source=source_out,
@@ -149,7 +150,7 @@ runs_router = APIRouter(prefix="/api/v1", tags=["runs"])
 @runs_router.get("/runs", response_model=PaginatedRuns)
 async def list_runs(
     source: str | None = None,
-    status: str | None = None,
+    status: str | None = Query(default=None, pattern="^(success|failed|running|partial)$"),
     limit: int = Query(default=50, le=100),
     offset: int = Query(default=0, ge=0),
     db: AsyncSession = Depends(get_db),
@@ -180,14 +181,11 @@ async def list_freshness(db: AsyncSession = Depends(get_db)):
     result = []
     for f in items:
         src = f.source if hasattr(f, "source") and f.source else None
-        result.append(FreshnessOut(
-            source_slug=src.slug if src else "unknown",
-            source_name=src.name if src else "Unknown",
-            last_success_at=f.last_success_at,
-            last_attempt_at=f.last_attempt_at,
-            is_stale=f.is_stale,
-            staleness_minutes=f.staleness_minutes,
-        ))
+        if not src:
+            continue
+        out = _freshness_out(src, f)
+        if out:
+            result.append(out)
     return result
 
 
@@ -199,12 +197,12 @@ quality_router = APIRouter(prefix="/api/v1", tags=["quality"])
 @quality_router.get("/quality", response_model=QualityResponse)
 async def list_quality(
     source: str | None = None,
-    status: str | None = None,
+    status: str | None = Query(default=None, pattern="^(pass|warn|fail)$"),
     limit: int = Query(default=50, le=100),
     db: AsyncSession = Depends(get_db),
 ):
     checks = await get_quality_checks(db, source_slug=source, status=status, limit=limit)
-    summary = await get_quality_summary(db)
+    summary = await get_quality_summary(db, source_slug=source)
     return QualityResponse(
         items=[_check_to_out(c) for c in checks],
         summary=QualitySummary(**summary),
@@ -246,21 +244,49 @@ async def metrics_summary(db: AsyncSession = Depends(get_db)):
 trigger_router = APIRouter(prefix="/api/v1", tags=["triggers"])
 
 
+def _require_trigger_auth(x_api_key: str | None) -> None:
+    settings = get_settings()
+    expected = (settings.trigger_api_key or "").strip()
+    if not expected:
+        return
+    if not x_api_key or x_api_key != expected:
+        raise HTTPException(status_code=401, detail="Invalid or missing X-API-Key")
+
+
 @trigger_router.post("/runs/trigger/{slug}", response_model=TriggerOut, status_code=202)
-async def trigger_run(slug: str, db: AsyncSession = Depends(get_db)):
+async def trigger_run(
+    slug: str,
+    db: AsyncSession = Depends(get_db),
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _require_trigger_auth(x_api_key)
+
     source = await get_source_by_slug(db, slug)
     if not source:
         raise HTTPException(status_code=404, detail="Source not found")
 
-    # Import here to avoid circular imports
     from packages.ingestion.jobs.runner import execute_connector
+
     run_id = await execute_connector(slug, db)
+
+    result = await db.execute(
+        select(Run).options(selectinload(Run.source)).where(Run.id == run_id)
+    )
+    run = result.scalar_one_or_none()
+    status = run.status if run else "unknown"
+    message = (
+        "Run completed successfully"
+        if status == "success"
+        else f"Run finished with status '{status}'"
+    )
+    if run and run.error_message:
+        message = run.error_message
 
     return TriggerOut(
         run_id=run_id,
         source_slug=slug,
-        status="running",
-        message="Run triggered successfully",
+        status=status,
+        message=message,
     )
 
 
@@ -285,7 +311,6 @@ def _run_to_out(run) -> RunOut:
 
 
 def _signal_to_out(signal, source_slug: str | None = None) -> SignalOut:
-    # Try to derive source_slug from the run->source chain
     slug = source_slug
     if not slug and hasattr(signal, "run") and signal.run and hasattr(signal.run, "source") and signal.run.source:
         slug = signal.run.source.slug

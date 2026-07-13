@@ -1,7 +1,6 @@
 """Test API endpoints by importing them directly."""
-import sys
-sys.path.insert(0, r"C:\dev\signalhub-apis\apps\api")
-sys.path.insert(0, r"C:\dev\signalhub-apis")
+from scripts._paths import ensure_repo_paths
+ensure_repo_paths()
 
 import asyncio
 from fastapi.testclient import TestClient

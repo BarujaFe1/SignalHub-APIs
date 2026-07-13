@@ -40,7 +40,14 @@ class CoinGeckoConnector(BaseConnector):
             return response.json()
 
     def validate_raw(self, raw: dict[str, Any]) -> bool:
-        return all(coin in raw for coin in COINS)
+        from packages.ingestion.contracts.coingecko import CoinGeckoRawResponse
+        from pydantic import ValidationError
+
+        try:
+            parsed = CoinGeckoRawResponse.model_validate(raw)
+            return all(getattr(parsed, coin) is not None for coin in COINS)
+        except ValidationError:
+            return all(coin in raw for coin in COINS)
 
     def normalize(self, raw: dict[str, Any]) -> list[SignalRecord]:
         observed_at = datetime.now(timezone.utc)

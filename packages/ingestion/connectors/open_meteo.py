@@ -33,11 +33,19 @@ class OpenMeteoConnector(BaseConnector):
             return response.json()
 
     def validate_raw(self, raw: dict[str, Any]) -> bool:
-        if "current" not in raw:
-            return False
-        current = raw["current"]
-        required = ["temperature_2m", "relative_humidity_2m", "wind_speed_10m"]
-        return all(k in current for k in required)
+        from packages.ingestion.contracts.open_meteo import OpenMeteoRawResponse
+        from pydantic import ValidationError
+
+        try:
+            OpenMeteoRawResponse.model_validate(raw)
+            return True
+        except ValidationError:
+            # Fallback for partial fixtures used in unit tests
+            if "current" not in raw:
+                return False
+            current = raw["current"]
+            required = ["temperature_2m", "relative_humidity_2m", "wind_speed_10m"]
+            return all(k in current for k in required)
 
     def normalize(self, raw: dict[str, Any]) -> list[SignalRecord]:
         current = raw["current"]

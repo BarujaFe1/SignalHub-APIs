@@ -1,6 +1,15 @@
 """Seed the database with initial source definitions."""
 
 import asyncio
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+API = ROOT / "apps" / "api"
+for path in (str(API), str(ROOT)):
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
 from sqlalchemy import select
 from app.db.engine import AsyncSessionLocal
 from app.db.models import Source, FreshnessStatus
@@ -32,31 +41,33 @@ SOURCES = [
 
 
 async def seed():
+    from app.db.base import Base
+    from app.db.engine import engine
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
     async with AsyncSessionLocal() as session:
         for source_data in SOURCES:
-            # Check if source already exists
             result = await session.execute(
                 select(Source).where(Source.slug == source_data["slug"])
             )
             existing = result.scalar_one_or_none()
 
             if existing:
-                print(f"  ⏭ Source '{source_data['slug']}' already exists")
+                print(f"  skip: source '{source_data['slug']}' already exists")
                 continue
 
             source = Source(**source_data)
             session.add(source)
             await session.flush()
-
-            # Create initial freshness record
             session.add(FreshnessStatus(source_id=source.id))
-
-            print(f"  ✓ Created source: {source_data['name']}")
+            print(f"  ok: created source {source_data['name']}")
 
         await session.commit()
-        print("\n✅ Seed complete")
+        print("\nSeed complete")
 
 
 if __name__ == "__main__":
-    print("🌱 Seeding SignalHub database...\n")
+    print("Seeding SignalHub database...\n")
     asyncio.run(seed())

@@ -5,9 +5,16 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Override default ignores of eslint-config-next.
+  {
+    rules: {
+      // Client data-fetch pages intentionally set state after mount / filter changes.
+      "react-hooks/set-state-in-effect": "off",
+      // Relative time labels use Date.now(); acceptable for ops dashboard freshness UI.
+      "react-hooks/purity": "off",
+      "@typescript-eslint/no-explicit-any": "error",
+    },
+  },
   globalIgnores([
-    // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
     "build/**",

@@ -23,6 +23,8 @@ export default function SourceDetailPage({ params }: { params: Promise<{ slug: s
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<SourceDetail | null>(null);
+  const [triggering, setTriggering] = useState(false);
+  const [triggerMsg, setTriggerMsg] = useState<string | null>(null);
 
   const fetchData = async () => {
     try {
@@ -30,11 +32,26 @@ export default function SourceDetailPage({ params }: { params: Promise<{ slug: s
       setError(null);
       const res = await api.sourceDetail(slug);
       setData(res);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setError("Failed to load source details. It might not exist or the API is down.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleTrigger = async () => {
+    try {
+      setTriggering(true);
+      setTriggerMsg(null);
+      const result = await api.triggerRun(slug);
+      setTriggerMsg(`${result.status}: ${result.message}`);
+      await fetchData();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to trigger run";
+      setTriggerMsg(message);
+    } finally {
+      setTriggering(false);
     }
   };
 
@@ -114,10 +131,26 @@ export default function SourceDetailPage({ params }: { params: Promise<{ slug: s
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          {source.last_run_status && <StatusBadge status={source.last_run_status} />}
-          {source.freshness && (
-            <FreshnessPill isStale={source.freshness.is_stale} minutes={source.freshness.staleness_minutes} />
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-3">
+            {source.last_run_status && <StatusBadge status={source.last_run_status} />}
+            {source.freshness && (
+              <FreshnessPill isStale={source.freshness.is_stale} minutes={source.freshness.staleness_minutes} />
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={handleTrigger}
+            disabled={triggering || !source.is_active}
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${triggering ? "animate-spin" : ""}`} />
+            {triggering ? "Running…" : "Run now"}
+          </button>
+          {triggerMsg && (
+            <p className="max-w-xs text-right text-xs text-muted-foreground" role="status">
+              {triggerMsg}
+            </p>
           )}
         </div>
       </div>

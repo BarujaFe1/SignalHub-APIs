@@ -25,7 +25,7 @@ export default function RunsPage() {
       setLoading(true);
       setError(null);
       
-      const runsParams: any = { limit: 50 };
+      const runsParams: { limit: number; source?: string; status?: string } = { limit: 50 };
       if (sourceFilter !== "all") runsParams.source = sourceFilter;
       if (statusFilter !== "all") runsParams.status = statusFilter;
       
@@ -37,7 +37,7 @@ export default function RunsPage() {
       setRuns(runsRes.items);
       setTotal(runsRes.total);
       setSources(sourcesRes);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setError("Failed to load runs. Ensure the API is running.");
     } finally {

@@ -85,6 +85,7 @@ async def lifespan(app: FastAPI):
             logger.info(f"📋 Registered job: {source.slug} (every {source.schedule_interval_minutes}m)")
 
     scheduler.start()
+    app.state.scheduler = scheduler
     logger.info("✅ Scheduler started")
 
     yield

@@ -1,62 +1,70 @@
-# Architecture
+# Architecture — SignalHub APIs
 
-## Overview
+## Purpose
 
-SignalHub APIs follows a single-process architecture where the API server, scheduler, and ingestion layer coexist in one FastAPI process. This is a deliberate V1 decision: no distributed complexity, no message queues, no separate workers.
+SignalHub makes backend analytics and public-API ingestion **visible, auditable, and explainable**. Heterogeneous external APIs are normalized into a common signal model, quality-checked, and exposed through FastAPI + a Next.js operations dashboard.
 
-## Data Flow
+## High-level diagram
 
-```mermaid
-sequenceDiagram
-    participant SCH as Scheduler
-    participant CON as Connector
-    participant API as External API
-    participant DB as PostgreSQL
-    participant FA as FastAPI
-    participant WEB as Next.js
-
-    SCH->>CON: Trigger job
-    CON->>API: HTTP GET
-    API-->>CON: JSON response
-    CON->>CON: Validate raw payload
-    CON->>CON: Normalize signals
-    CON->>DB: Store raw_payload
-    CON->>DB: Store normalized_signals
-    CON->>DB: Update run status
-    CON->>DB: Update freshness
-    CON->>DB: Run quality checks
-    WEB->>FA: GET /api/v1/...
-    FA->>DB: Query
-    DB-->>FA: Results
-    FA-->>WEB: JSON response
+```text
+┌──────────────┐   fetch    ┌─────────────────┐
+│ Open-Meteo   │───────────▶│                 │
+│ Frankfurter  │            │  Connectors     │
+│ CoinGecko    │───────────▶│  (packages/)    │
+└──────────────┘            └────────┬────────┘
+                                     │ validate / normalize / QC
+                                     ▼
+                            ┌─────────────────┐
+                            │  SQLite/Postgres│
+                            │  7-table model  │
+                            └────────┬────────┘
+                                     │
+                    ┌────────────────┼────────────────┐
+                    ▼                                 ▼
+           ┌────────────────┐                ┌────────────────┐
+           │ FastAPI :8000  │◀── REST ───────│ Next.js :3000  │
+           │ OpenAPI /docs  │                │ Ops dashboard  │
+           │ APScheduler    │                └────────────────┘
+           └────────────────┘
 ```
 
-## Modules
+## Monorepo layout
 
-### Frontend (`apps/web`)
-Next.js 15 App Router with TypeScript. Five pages: Overview, Sources, Runs, Quality, Docs. Consumes the FastAPI read layer.
+| Path | Role |
+|------|------|
+| `apps/api` | FastAPI app, SQLAlchemy models, Alembic, API tests |
+| `apps/web` | Next.js 16 App Router dashboard |
+| `packages/ingestion` | Connectors, Pydantic contracts, quality checks, job runner |
+| `scripts/` | Seed, manual triggers, debug helpers |
+| `docs/` | Architecture, testing, deployment, audit, handoff |
 
-### Backend (`apps/api`)
-FastAPI with async SQLAlchemy. Exposes read endpoints for the frontend. Hosts the scheduler via lifespan events.
+## Domain model (7 tables)
 
-### Ingestion (`packages/ingestion`)
-Connector layer with base class, per-source connectors, Pydantic contracts, transforms, and quality checks. Imported by the API process.
+1. `sources` — connector definitions + schedule
+2. `runs` — execution history + idempotency key
+3. `raw_payloads` — original JSON responses
+4. `normalized_signals` — unified numeric signals
+5. `freshness_status` — last success / staleness
+6. `quality_checks` — per-run quality gates
+7. `event_logs` — operational events (write-heavy; not yet exposed via API)
 
-### Persistence
-PostgreSQL 16 with 7 tables: sources, runs, raw_payloads, normalized_signals, freshness_status, quality_checks, event_logs.
+## Request flow
 
-## Key Decisions
+1. Scheduler (or `POST /runs/trigger/{slug}`) calls `execute_connector`.
+2. Connector `fetch` → Pydantic/contract `validate_raw` → `normalize`.
+3. Persist raw + signals; run null/volume/range/schema checks; update freshness.
+4. Dashboard reads `/api/v1/*` for KPIs, timelines, and source detail.
 
-| Decision | Rationale |
-|----------|-----------|
-| Single process | V1 scope. No need for distributed architecture. Simplifies deployment and debugging. |
-| APScheduler in-process | Lightweight, no external dependencies. Runs in the same event loop as FastAPI. |
-| No Celery/Airflow | Overkill for 3 connectors. Would add operational complexity without V1 value. |
-| Raw + normalized storage | Preserves original data for debugging while providing clean signals for consumption. |
-| Idempotency keys | Prevents duplicate runs within the same time window. Simple and effective. |
-| No auth in V1 | Portfolio project. Auth adds complexity without demonstrating data engineering skills. |
-| PostgreSQL only | One database. No Redis, no Elasticsearch. Postgres handles everything in V1. |
+## Design principles
 
-## Deployment
+- **Explainability over black boxes** — every run has duration, counts, errors, QC.
+- **Contracts at the edge** — Pydantic models validate upstream payloads.
+- **SQLite-first DX** — clone and run without Docker; Postgres optional via Compose.
+- **Optional trigger auth** — `TRIGGER_API_KEY` gates manual ingestion for public demos.
 
-V1 runs locally via Docker Compose. The compose file includes PostgreSQL, the API, and the frontend. For public demos, the API and frontend can be deployed to any container host.
+## Non-goals (V1)
+
+- Multi-tenant auth / RBAC
+- Stream processing / Kafka
+- Real-time websocket push
+- Horizontal worker fleet

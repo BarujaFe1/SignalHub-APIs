@@ -2,7 +2,8 @@
 import sqlite3
 import os
 
-DB_PATH = r"C:\dev\signalhub-apis\apps\api\signalhub.db"
+from pathlib import Path
+DB_PATH = str(Path(__file__).resolve().parents[2] / "apps" / "api" / "signalhub.db")
 
 if not os.path.exists(DB_PATH):
     print(f"DB file NOT FOUND at {DB_PATH}")

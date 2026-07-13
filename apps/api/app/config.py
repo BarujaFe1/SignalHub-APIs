@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     # Mock Data for restricted environments
     use_mock_data: bool = False
 
+    # Optional gate for POST /runs/trigger (empty = open for local demo)
+    trigger_api_key: str = ""
+
     model_config = {"env_file": ".env", "extra": "ignore"}
 
 

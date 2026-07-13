@@ -39,7 +39,7 @@ export default function OverviewPage() {
       setRuns(runsRes.items);
       setMetrics(metricsRes);
       setQualitySummary(qualityRes.summary);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setError("Unable to connect to the backend API. Please ensure the server is running.");
     } finally {

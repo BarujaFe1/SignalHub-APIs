@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import (
     Source, Run, NormalizedSignal, FreshnessStatus,
-    QualityCheck, EventLog
+    QualityCheck,
 )
 
 
@@ -128,18 +128,42 @@ async def get_quality_checks(
     return list(result.scalars().all())
 
 
-async def get_quality_summary(db: AsyncSession) -> dict:
-    total = (await db.execute(select(func.count()).select_from(QualityCheck))).scalar() or 0
-    passed = (await db.execute(
-        select(func.count()).select_from(QualityCheck).where(QualityCheck.check_status == "pass")
-    )).scalar() or 0
-    warnings = (await db.execute(
-        select(func.count()).select_from(QualityCheck).where(QualityCheck.check_status == "warn")
-    )).scalar() or 0
-    failures = (await db.execute(
-        select(func.count()).select_from(QualityCheck).where(QualityCheck.check_status == "fail")
-    )).scalar() or 0
+async def get_quality_summary(db: AsyncSession, source_slug: str | None = None) -> dict:
+    """Aggregate quality check counts, optionally scoped to a source."""
+    filters = []
+    if source_slug:
+        filters.append(Source.slug == source_slug)
+
+    def _base():
+        q = select(func.count()).select_from(QualityCheck)
+        if source_slug:
+            q = q.join(Run, QualityCheck.run_id == Run.id).join(Source, Run.source_id == Source.id)
+            for f in filters:
+                q = q.where(f)
+        return q
+
+    total = (await db.execute(_base())).scalar() or 0
+    passed = (await db.execute(_base().where(QualityCheck.check_status == "pass"))).scalar() or 0
+    warnings = (await db.execute(_base().where(QualityCheck.check_status == "warn"))).scalar() or 0
+    failures = (await db.execute(_base().where(QualityCheck.check_status == "fail"))).scalar() or 0
     return {"total": total, "passed": passed, "warnings": warnings, "failures": failures}
+
+
+def compute_freshness_age(
+    last_success_at: datetime | None,
+    schedule_interval_minutes: int,
+) -> tuple[bool, int]:
+    """Recompute staleness from last success (not the stored snapshot)."""
+    if not last_success_at:
+        return True, 0
+
+    success = last_success_at
+    if success.tzinfo is None:
+        success = success.replace(tzinfo=timezone.utc)
+
+    minutes = max(0, int((datetime.now(timezone.utc) - success).total_seconds() / 60))
+    threshold = max(schedule_interval_minutes * 2, 1)
+    return minutes > threshold, minutes
 
 
 # ─── Metrics Service ─────────────────────────────────────
@@ -147,7 +171,7 @@ async def get_quality_summary(db: AsyncSession) -> dict:
 async def get_metrics_summary(db: AsyncSession) -> dict:
     total_sources = (await db.execute(select(func.count()).select_from(Source))).scalar() or 0
     active_sources = (await db.execute(
-        select(func.count()).select_from(Source).where(Source.is_active == True)
+        select(func.count()).select_from(Source).where(Source.is_active.is_(True))
     )).scalar() or 0
     total_runs = (await db.execute(select(func.count()).select_from(Run))).scalar() or 0
     successful_runs = (await db.execute(
@@ -163,7 +187,7 @@ async def get_metrics_summary(db: AsyncSession) -> dict:
     pass_rate = quality_summary["passed"] / total_qc if total_qc > 0 else 1.0
 
     stale = (await db.execute(
-        select(func.count()).select_from(FreshnessStatus).where(FreshnessStatus.is_stale == True)
+        select(func.count()).select_from(FreshnessStatus).where(FreshnessStatus.is_stale.is_(True))
     )).scalar() or 0
 
     last_run = await db.execute(select(Run.started_at).order_by(desc(Run.started_at)).limit(1))

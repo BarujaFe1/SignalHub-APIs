@@ -26,7 +26,7 @@ export default function QualityPage() {
       setLoading(true);
       setError(null);
       
-      const params: any = { limit: 50 };
+      const params: { limit: number; source?: string; status?: string } = { limit: 50 };
       if (sourceFilter !== "all") params.source = sourceFilter;
       if (statusFilter !== "all") params.status = statusFilter;
 
@@ -38,7 +38,7 @@ export default function QualityPage() {
       setChecks(qualityRes.items);
       setSummary(qualityRes.summary);
       setSources(sourcesRes);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setError("Failed to load quality metrics. Ensure the API is running.");
     } finally {

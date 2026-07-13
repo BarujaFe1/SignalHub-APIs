@@ -1,5 +1,8 @@
 .PHONY: help dev db api web migrate seed test lint clean
 
+ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+export PYTHONPATH := $(ROOT)/apps/api:$(ROOT)
+
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
@@ -11,7 +14,7 @@ db: ## Start PostgreSQL
 db-stop: ## Stop PostgreSQL
 	docker compose stop db
 
-dev: ## Start all services
+dev: ## Start all services (requires Docker)
 	docker compose up -d
 
 down: ## Stop all services
@@ -19,7 +22,7 @@ down: ## Stop all services
 
 # ─── Backend ─────────────────────────────────
 
-api: ## Start FastAPI dev server
+api: ## Start FastAPI dev server (SQLite by default)
 	cd apps/api && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 migrate: ## Run Alembic migrations
@@ -28,8 +31,8 @@ migrate: ## Run Alembic migrations
 migrate-new: ## Create new migration (usage: make migrate-new MSG="description")
 	cd apps/api && alembic revision --autogenerate -m "$(MSG)"
 
-seed: ## Seed database with initial data
-	cd apps/api && python -m scripts.seed
+seed: ## Seed database with initial sources
+	cd apps/api && python ../../scripts/seed.py
 
 # ─── Frontend ────────────────────────────────
 
@@ -41,8 +44,8 @@ web-build: ## Build frontend
 
 # ─── Quality ─────────────────────────────────
 
-test: ## Run backend tests
-	cd apps/api && python -m pytest packages/ingestion/tests/ -v
+test: ## Run backend + ingestion tests
+	cd apps/api && python -m pytest ../../packages/ingestion/tests ../../apps/api/tests -v
 
 lint-api: ## Lint backend
 	cd apps/api && ruff check .
@@ -51,6 +54,9 @@ lint-web: ## Lint frontend
 	cd apps/web && npm run lint
 
 lint: lint-api lint-web ## Lint everything
+
+typecheck-web: ## Typecheck frontend
+	cd apps/web && npx tsc --noEmit
 
 # ─── Utilities ───────────────────────────────
 

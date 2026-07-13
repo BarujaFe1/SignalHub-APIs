@@ -6,6 +6,7 @@ __pycache__/
 .venv/
 venv/
 env/
+apps/api/.venv/
 
 # Build
 .next/
@@ -46,3 +47,6 @@ signalhub.db
 
 # Misc
 *.log
+*.pem
+*.key
+credentials.json

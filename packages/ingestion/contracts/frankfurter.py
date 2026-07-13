@@ -1,7 +1,6 @@
 """Frankfurter API contracts."""
 
-from typing import Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class FrankfurterInputParams(BaseModel):
@@ -31,8 +30,7 @@ class FrankfurterRawResponse(BaseModel):
         description="Currency code to exchange rate mapping"
     )
     
-    class Config:
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
 
 class FrankfurterExpectedErrors:

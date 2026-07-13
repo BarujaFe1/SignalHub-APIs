@@ -32,10 +32,17 @@ class FrankfurterConnector(BaseConnector):
             return response.json()
 
     def validate_raw(self, raw: dict[str, Any]) -> bool:
-        if "rates" not in raw:
-            return False
-        rates = raw["rates"]
-        return all(s in rates for s in SYMBOLS)
+        from packages.ingestion.contracts.frankfurter import FrankfurterRawResponse
+        from pydantic import ValidationError
+
+        try:
+            parsed = FrankfurterRawResponse.model_validate(raw)
+            return all(s in parsed.rates for s in SYMBOLS)
+        except ValidationError:
+            if "rates" not in raw:
+                return False
+            rates = raw["rates"]
+            return all(s in rates for s in SYMBOLS)
 
     def normalize(self, raw: dict[str, Any]) -> list[SignalRecord]:
         rates = raw["rates"]

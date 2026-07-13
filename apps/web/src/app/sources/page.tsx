@@ -19,7 +19,7 @@ export default function SourcesPage() {
       setError(null);
       const data = await api.sources();
       setSources(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setError("Failed to load sources. Ensure the API is running.");
     } finally {

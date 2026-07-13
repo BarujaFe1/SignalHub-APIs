@@ -4,7 +4,6 @@ Run after each connector execution to validate data quality.
 Each check returns a result dict ready for persistence.
 """
 
-from datetime import datetime, timezone
 from typing import Any
 
 from packages.ingestion.base import SignalRecord
@@ -86,25 +85,25 @@ def range_check(signals: list[SignalRecord], ranges: dict[str, tuple[float, floa
 
 
 def schema_drift_check(raw: dict[str, Any], expected_keys: set[str], source_slug: str) -> dict:
-    """Check for unexpected fields in the raw response."""
+    """Check that required fields are still present in the raw response."""
     actual_keys = set(_flatten_keys(raw))
-    unexpected = actual_keys - expected_keys
+    missing = expected_keys - actual_keys
 
-    if unexpected:
-        sample = list(unexpected)[:5]
+    if missing:
+        sample = list(sorted(missing))[:5]
         return {
             "check_name": "schema_drift",
             "check_status": "warn",
-            "expected_value": "stable schema",
-            "actual_value": f"new fields: {', '.join(sample)}",
-            "message": f"Unexpected fields found in response: {', '.join(sample)}.",
+            "expected_value": "required fields present",
+            "actual_value": f"missing: {', '.join(sample)}",
+            "message": f"Required fields missing from response: {', '.join(sample)}.",
         }
     return {
         "check_name": "schema_drift",
         "check_status": "pass",
-        "expected_value": "stable schema",
-        "actual_value": "no drift",
-        "message": "Response schema matches expected structure.",
+        "expected_value": "required fields present",
+        "actual_value": "no missing required fields",
+        "message": "Response contains all required fields.",
     }
 
 
@@ -146,21 +145,36 @@ EXPECTED_RANGES = {
     },
 }
 
+EXPECTED_SCHEMA_KEYS = {
+    "open-meteo": {
+        "current",
+        "current.temperature_2m",
+        "current.relative_humidity_2m",
+        "current.wind_speed_10m",
+    },
+    "frankfurter": {"base", "date", "rates"},
+    "coingecko": {
+        "bitcoin", "bitcoin.usd", "ethereum", "ethereum.usd",
+        "solana", "solana.usd",
+    },
+}
+
 
 def run_quality_checks(source_slug: str, signals: list[SignalRecord], raw: dict[str, Any]) -> list[dict]:
     """Run all quality checks for a given source."""
     checks = []
 
-    # Null check
     checks.append(null_check(signals, source_slug))
 
-    # Volume check
     expected = EXPECTED_COUNTS.get(source_slug, len(signals))
     checks.append(volume_check(signals, expected, source_slug))
 
-    # Range check
     ranges = EXPECTED_RANGES.get(source_slug, {})
     if ranges:
         checks.append(range_check(signals, ranges))
+
+    expected_keys = EXPECTED_SCHEMA_KEYS.get(source_slug)
+    if expected_keys:
+        checks.append(schema_drift_check(raw, expected_keys, source_slug))
 
     return checks

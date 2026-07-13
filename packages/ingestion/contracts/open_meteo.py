@@ -1,7 +1,6 @@
 """Open-Meteo API contracts."""
 
-from typing import Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class OpenMeteoInputParams(BaseModel):
@@ -26,8 +25,7 @@ class OpenMeteoCurrentWeather(BaseModel):
     wind_speed_10m: float
     weather_code: int | None = None
     
-    class Config:
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
 
 class OpenMeteoRawResponse(BaseModel):
@@ -41,8 +39,7 @@ class OpenMeteoRawResponse(BaseModel):
     timezone: str
     current: OpenMeteoCurrentWeather
     
-    class Config:
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
 
 class OpenMeteoExpectedErrors:

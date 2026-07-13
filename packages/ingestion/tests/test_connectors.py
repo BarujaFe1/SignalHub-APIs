@@ -1,6 +1,5 @@
 """Tests for connectors — validate fetch, validate, normalize."""
 
-import pytest
 from datetime import datetime, timezone
 
 

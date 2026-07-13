@@ -1,7 +1,8 @@
 """Deeper inspection of the SQLite database."""
 import sqlite3
 
-DB_PATH = r"C:\dev\signalhub-apis\apps\api\signalhub.db"
+from pathlib import Path
+DB_PATH = str(Path(__file__).resolve().parents[2] / "apps" / "api" / "signalhub.db")
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
